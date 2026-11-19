@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Kho linh kiện điện tử · PCB Component Inventory</title>
+  <style>
+    :root { --ink:#172838;--muted:#607386;--line:#dbe5e8;--bg:#f4f7f8;--paper:#fff;--navy:#102a3a;--teal:#0d817d;--teal-soft:#e8f7f4;--shadow:0 9px 27px rgba(17,49,67,.065); }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font-family:Inter,"Segoe UI",Arial,sans-serif; line-height:1.55; }
+    button,input,textarea,select { font:inherit; }
+    button { cursor:pointer; }
+    button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,a:focus-visible { outline:3px solid #6cd3cb;outline-offset:3px; }
+    .hero { background:radial-gradient(circle at 90% -20%,rgba(67,192,175,.25),transparent 37%),linear-gradient(125deg,#102839,#163f4c 80%); color:white; overflow:hidden; }
+    .wrap { max-width:1210px; margin:0 auto; padding:0 25px; }
+    .hero-inner { padding-top:49px;padding-bottom:75px;position:relative; }
+    .hero-inner::after { content:"";position:absolute;inset:0 0 0 auto;width:40%;opacity:.18;pointer-events:none;background-image:linear-gradient(#6bcec0 1px,transparent 1px),linear-gradient(90deg,#6bcec0 1px,transparent 1px);background-size:29px 29px;mask-image:linear-gradient(90deg,transparent,#000); }
+    .hero-copy { position:relative;z-index:1;max-width:760px; }
+    .eyebrow { letter-spacing:.15em;color:#9fe2d8;font-weight:700;font-size:12px;text-transform:uppercase; }
+    h1 { font-size:clamp(30px,4.5vw,49px);line-height:1.1;letter-spacing:-.045em;margin:12px 0 12px; }
+    .subtitle { max-width:680px;color:#d0e2e8;font-size:15px;margin:0 0 24px; }
+    .actions { display:flex;gap:10px;flex-wrap:wrap; }
+    .btn { border:1px solid transparent;border-radius:11px;padding:11px 17px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .15s; }
+    .btn:hover { transform:translateY(-1px); }
+    .btn-primary { background:#a7ebe2;color:#123a40; }
+    .btn-primary:hover { background:#c3faf1; }
+    .btn-outline { background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.29); }
+    .btn-outline:hover { background:rgba(255,255,255,.17); }
+    .btn-quiet { background:#eaf2f3;color:#274e59; }
+    .btn-quiet:hover { background:#dceced; }
+    .stats { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-top:-43px;position:relative;z-index:2; }
+    .stat { background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 25px;box-shadow:var(--shadow); }
+    .stat-label { margin:0;font-size:13px;color:var(--muted);font-weight:650; }
+    .stat-value { font-size:36px;letter-spacing:-.04em;line-height:1.2;font-weight:800;margin:7px 0 0;font-variant-numeric:tabular-nums; }
+    .stat-note { margin:3px 0 0;font-size:12px;color:#788995; }
+    main { padding-bottom:75px; }
+    .section-title { font-size:21px;letter-spacing:-.025em;margin:37px 0 17px; }
+    .work-area { display:grid;grid-template-columns: minmax(0,1fr) 260px;gap:19px;align-items:start; }
+    .panel { background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:23px;box-shadow:var(--shadow); }
+    .filters { display:flex;flex-wrap:wrap;gap:7px;margin:17px 0 17px; }
+    .filter { background:#f3f7f8;color:#385464;border:1px solid #e0e9eb;border-radius:99px;padding:7px 11px;font-weight:650;font-size:12px;white-space:nowrap; }
+    .filter[aria-pressed="true"] { background:var(--navy);color:white;border-color:var(--navy); }
+    .filter .pill-count { font-size:11px;opacity:.74;margin-left:4px; }
+    .search { width:100%;border:1px solid #cbdce1;border-radius:12px;padding:13px 16px 13px 42px;outline:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='21' viewBox='0 0 24 24' fill='none' stroke='%23607887' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:13px center; }
+    .search:focus { border-color:var(--teal);box-shadow:0 0 0 3px rgba(19,137,129,.12); }
+    .results-head { display:flex;gap:15px;align-items:center;justify-content:space-between;margin-bottom:13px; }
+    .results-count { font-size:13px;color:var(--muted); }
+    .cards { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px; }
+    .part-card { border:1px solid var(--line);border-radius:14px;background:#fff;padding:19px;min-width:0;box-shadow:0 2px 7px rgba(20,48,59,.02); }
+    .part-card:hover { border-color:#b5d8d5; }
+    .card-top { display:flex;align-items:flex-start;justify-content:space-between;gap:10px; }
+    .part-code { margin:0;font-size:18px;letter-spacing:-.025em;overflow-wrap:anywhere;line-height:1.3; }
+    .part-name { color:var(--muted);font-size:12px;margin:4px 0 0; }
+    .tag { display:inline-block;color:#086d67;background:#e5f5f1;border:1px solid #b8e4dd;border-radius:6px;font-size:11px;font-weight:700;padding:3px 7px;margin-top:12px; }
+    .desc { color:#2f4352;font-size:13px;margin:15px 0 12px; }
+    .field-label { font-size:11px;letter-spacing:.045em;font-weight:800;text-transform:uppercase;color:#6a7d89;margin:13px 0 3px; }
+    .field-value { margin:0;font-size:13px;color:#344c57;white-space:pre-wrap;overflow-wrap:anywhere; }
+    .part-footer { display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;border-top:1px solid #e8edef;padding-top:13px;margin-top:15px; }
+    .sheet-link { color:#08766f;text-decoration:none;font-size:12px;font-weight:700;overflow-wrap:anywhere; }
+    .sheet-link:hover { text-decoration:underline; }
+    .sheet-missing { font-size:12px;color:#8b9aa3; }
+    .stock { display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#516877; }
+    .qty-input { width:70px;border:1px solid #cadcde;border-radius:8px;padding:6px 7px;text-align:center;font-weight:700;color:var(--ink); }
+    .status-note { font-size:11px; font-weight:750; display:block; margin-top:8px; border-radius:7px; padding:5px 8px; color:#7b561d; background:#fff5e4; }
+    .stock-verify { display:flex; align-items:center; gap:6px; font-size:11px; color:#617785; cursor:pointer; margin-top:8px; }
+    .stock-verify input { accent-color:#08766f; cursor:pointer; }
+    .stock-verify.is-verified { color:#08766f; }
+    .circuit { margin-top:15px;border-radius:9px;border:1px solid #d9e8e9;overflow:hidden;background:#f8fbfb; }
+    .circuit summary { cursor:pointer;font-size:12px;color:#195d61;font-weight:800;padding:10px 12px; }
+    .circuit[open] summary { border-bottom:1px solid #d9e8e9; }
+    .circuit-body { padding:12px; }
+    .circuit pre { overflow-x:auto;white-space:pre;tab-size:4;font:12px/1.5 Consolas,"Courier New",monospace;background:#142a35;color:#d9f5ea;border-radius:8px;padding:13px;margin:0 0 8px; }
+    .side-title { font-size:16px;margin:0 0 15px;letter-spacing:-.02em; }
+    .bar-item { margin:0 0 14px; }
+    .bar-row { display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-size:12px;color:#536775;margin-bottom:6px; }
+    .bar-row strong { color:#233b47;font-variant-numeric:tabular-nums; }
+    .bar-track { height:6px;background:#e7edef;border-radius:50px;overflow:hidden; }
+    .bar-fill { background:#1e9992;height:100%;border-radius:50px;min-width:0; }
+    .side-info { margin-top:18px;border-top:1px solid var(--line);padding-top:17px;font-size:12px;color:var(--muted); }
+    .side-info p { margin:0 0 9px; }
+    .empty { grid-column:1/-1;text-align:center;border:1px dashed #b9cbd0;border-radius:14px;padding:48px 22px;background:#fbfdfd; }
+    .empty .symbol { margin-bottom:8px;font-size:30px; }
+    .empty h3 { margin:5px 0;font-size:17px; }
+    .empty p { max-width:430px;margin:5px auto;color:var(--muted);font-size:13px; }
+    .notice { display:none;margin:16px 0 0;padding:12px 16px;border:1px solid #b2d9d2;border-radius:10px;background:#ecfaf7;color:#115f5c;font-size:13px; }
+    .notice.show { display:block; }
+    .edit-panel { margin-top:27px; }
+    .edit-panel summary { cursor:pointer;font-weight:800;font-size:17px; }
+    .edit-panel > p { font-size:13px;color:var(--muted); }
+    .entry-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:17px; }
+    .entry-grid label { display:flex;flex-direction:column;gap:5px;color:#4b6370;font-size:12px;font-weight:750; }
+    .entry-grid input,.entry-grid textarea { border:1px solid #cbdce1;border-radius:8px;padding:9px 10px;width:100%;font-size:13px;background:white;color:var(--ink); }
+    .entry-grid textarea { min-height:78px;resize:vertical; }
+    .span-2 { grid-column:1/-1; }
+    .form-actions { display:flex;gap:9px;align-items:center;margin-top:17px;flex-wrap:wrap; }
+    .foot { text-align:center;font-size:12px;color:#81919a;padding:22px 0 35px; }
+    [hidden] { display:none!important; }
+    @media (max-width:850px) { .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .work-area { grid-template-columns:1fr; }.sidebar { order:-1; }.breakdown { display:grid;grid-template-columns:repeat(2,1fr);column-gap:17px; }.cards { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:610px) { .wrap { padding-left:15px;padding-right:15px; }.hero-inner { padding-top:35px;padding-bottom:69px; }.stats { gap:8px; }.stat { padding:16px 12px; }.stat-label { font-size:11px; }.stat-value { font-size:26px; }.stat-note { font-size:10px; }.cards,.entry-grid { grid-template-columns:1fr; }.breakdown { grid-template-columns:1fr; }.panel { padding:16px; }.section-title { margin-top:28px; }.results-head { align-items:start; } }
+    @media (prefers-reduced-motion:reduce) { .btn { transition:none; } }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <div class="eyebrow">PCB COMPONENT LIBRARY / OFFLINE EDITION</div>
+        <h1>Kho linh kiện điện tử</h1>
+        <p class="subtitle">Thư viện linh kiện cá nhân: tra cứu nhanh thông số, cách mắc, datasheet, mạch ví dụ và kiểm soát số lượng tồn kho. Tất cả trong một file HTML, không cần kết nối Internet để sử dụng.</p>
+        <div class="actions">
+          <button id="exportBtn" class="btn btn-primary" type="button">↓ Xuất HTML mới nhất</button>
+          <button id="importBtn" class="btn btn-outline" type="button">↑ Nhập kho từ tệp</button>
+          <input id="importFile" type="file" accept=".html,.htm,.json,text/html,application/json" hidden aria-label="Nhập dữ liệu kho từ file HTML hoặc JSON">
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="stats" aria-label="Tổng quan kho linh kiện">
+      <div class="stat"><p class="stat-label">Loại linh kiện</p><p id="statKinds" class="stat-value">0</p><p class="stat-note">Mỗi mã / biến thể một mục</p></div>
+      <div class="stat"><p class="stat-label">SL tồn đã xác nhận</p><p id="statQuantity" class="stat-value">0</p><p class="stat-note">Chỉ cộng mục đã kiểm kê</p></div>
+      <div class="stat"><p class="stat-label">Chưa kiểm kê</p><p id="statReference" class="stat-value">0</p><p class="stat-note">SL mặc định 1, không tính tồn thực</p></div>
+      <div class="stat"><p class="stat-label">Danh mục có dữ liệu</p><p id="statCategories" class="stat-value">0</p><p class="stat-note" id="statCategoriesNote">Trong 9 nhóm mặc định</p></div>
+    </section>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+    <h2 class="section-title">Danh sách linh kiện</h2>
+    <p style="margin:-12px 0 17px;font-size:13px;color:#546c7a">Mẫu điện trở và tụ vừa bổ sung là <strong>danh mục tham khảo</strong>, số lượng mặc định 1 để dễ nhập liệu nhưng <strong>chưa tính vào tồn kho thực</strong>. Nhấn “Đã kiểm kê, có hàng” trên mỗi thẻ sau khi xác nhận. Datasheet liên kết là của <strong>dòng sản phẩm tham chiếu</strong>, không mặc định chính là mã đang sở hữu.</p>
+    <div class="work-area">
+      <section class="panel" aria-label="Tra cứu linh kiện">
+        <label for="searchInput" class="field-label" style="display:block;margin:0 0 7px">Tìm linh kiện</label>
+        <input id="searchInput" class="search" type="search" autocomplete="off" placeholder="Mã, tên, chức năng, ứng dụng, thông số...">
+        <div id="categoryFilters" class="filters" role="group" aria-label="Lọc theo danh mục"></div>
+        <div class="results-head"><strong id="resultsHeading">Tất cả linh kiện</strong><span class="results-count" id="resultsCount">0 kết quả</span></div>
+        <div id="cards" class="cards"></div>
+      </section>
+      <aside class="panel sidebar" aria-label="Thống kê theo danh mục">
+        <h3 class="side-title">Phân bố theo danh mục</h3>
+        <div id="breakdown" class="breakdown"></div>
+        <div class="side-info">
+          <p><strong>Quy tắc dữ liệu:</strong> Mỗi mã chỉ có một bản ghi; khi trùng mã sẽ cập nhật, không nhân đôi.</p>
+          <p><strong>Lưu tồn kho:</strong> Tự động lưu số lượng và trạng thái “đã kiểm kê” trong trình duyệt. Số lượng của mẫu tham khảo mặc định 1, chưa tính vào tồn thực.</p>
+          <p><strong>Sao lưu an toàn:</strong> Nhấn “Xuất HTML mới nhất” để đóng gói toàn bộ dữ liệu và số lượng vào chính file HTML mới.</p>
+        </div>
+      </aside>
+    </div>
+    <details class="panel edit-panel" id="manualPanel">
+      <summary>＋ Thêm / cập nhật linh kiện thủ công</summary>
+      <p>Nhập trực tiếp linh kiện vào kho khi cần. Mã linh kiện hoặc tên là khóa nhận diện; nếu trùng, hệ thống sẽ yêu cầu xác nhận cập nhật.</p>
+      <form id="addForm">
+        <div class="entry-grid">
+          <label>Mã linh kiện / mã module<input name="code" maxlength="120" placeholder="VD: SN74LVC1G125"></label>
+          <label>Tên / biến thể<input name="name" maxlength="180" placeholder="VD: Bộ đệm 3 trạng thái"></label>
+          <label>Danh mục<input name="category" list="categoryList" required placeholder="Chọn hoặc nhập nhóm mới"><datalist id="categoryList"></datalist></label>
+          <label>Số lượng tồn kho<input name="qty" type="number" min="0" max="99999999" step="1" value="1" required></label>
+          <label class="span-2">Chức năng chính<textarea name="summary" placeholder="Mô tả ngắn gọn bản chất hoạt động"></textarea></label>
+          <label class="span-2">Cách mắc / ghi chú phần cứng<textarea name="wiring" placeholder="Chân cấp nguồn, chân tín hiệu, điện trở, tụ bypass..."></textarea></label>
+          <label>Thông số giới hạn<input name="limits" placeholder="VD: VCC 1.65–5.5 V"></label>
+          <label>Chân / pinout<input name="pinout" placeholder="VD: 1=OE, 2=A, 3=GND..."></label>
+          <label class="span-2">Ứng dụng thực tế<input name="applications" placeholder="VD: Cách ly tín hiệu, chuyển mức..."></label>
+          <label class="span-2">URL datasheet chính thức (nếu có)<input name="datasheet" type="url" placeholder="https://..."></label>
+          <label class="span-2">Từ khóa datasheet khi chưa có link<input name="datasheetSearch" placeholder="Tên mã + manufacturer + datasheet"></label>
+          <label class="span-2">Sơ đồ mạch ví dụ dạng ASCII<textarea name="example" style="min-height:120px;font-family:Consolas,monospace" placeholder="Nguồn ── R ── LED ── GND"></textarea></label>
+          <label class="span-2">Giải thích mạch ví dụ<textarea name="exampleExplain" placeholder="Cách mạch hoạt động, ý nghĩa giá trị linh kiện phụ trợ..."></textarea></label>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Lưu vào kho</button><button class="btn btn-quiet" type="reset">Xóa nội dung form</button></div>
+      </form>
+    </details>
+    <p class="foot">Một tệp duy nhất · HTML + CSS + JavaScript thuần · Không yêu cầu máy chủ · Dữ liệu có thể xuất / nhập</p>
+  </main>
+
+  <!-- SEED INVENTORY: Khi cập nhật file từ ChatGPT, thêm/cập nhật bản ghi tại đây.
+       Mỗi bản ghi: id, code, name, category, summary, wiring, limits, pinout,
+       applications, datasheet, datasheetSearch, example, exampleExplain, qty, stockStatus. -->
+  <script type="application/json" id="embeddedInventory">[
+  {
+    "id": "gbj2510",
+    "code": "GBJ2510",
+    "name": "Cầu diode chỉnh lưu 1 pha 25 A / 1000 V (GBJ)",
+    "category": "Diode \u0026 Zener",
+    "summary": "Cầu chỉnh lưu toàn sóng gồm 4 diode, biến AC 1 pha thành DC nhấp nhô; mỗi nửa chu kỳ có 2 diode dẫn, giữ cùng chiều dòng qua tải.",
+    "wiring": "Nhìn từ mặt TRƯỚC có chữ/ký hiệu và chân hướng xuống (ví dụ Diodes Incorporated): + | ~ | ~ | −. Hai chân ~ nhận AC; chân + và − cấp cho tải DC. Nếu cần điện áp phẳng, mắc tụ hóa song song đầu ra, đúng cực tính (+ với +, − với −); chọn điện áp định mức tụ cao hơn điện áp đỉnh sau chỉnh lưu. Dòng lớn cần tản nhiệt thực sự, dây dẫn/PCB và cầu chì phù hợp; cân nhắc hạn dòng khởi động do tụ lớn. Không nối đầu ra cầu trực tiếp vào GPIO/ESP32. Không thử nghiệm trực tiếp với điện lưới 220VAC.",
+    "limits": "VRRM = 1000 V; IF(AV) = 25 A CHỈ với tản nhiệt phù hợp (đồ thị hãng: khoảng 4 A không tản nhiệt đến Tc≈100°C); IFSM = 350 A, 8.3 ms không lặp; VF mỗi diode ≤1.05 V @ IF=12.5 A, Tj=25°C; Tj=−55…+150°C. Tham chiếu: Diodes Incorporated, DS21221 Rev.11-2 (05/2025).",
+    "pinout": "Mặt trước có logo/mã, chân hướng xuống: chân 1 = +DC; chân 2 = ~AC1; chân 3 = ~AC2; chân 4 = −DC. Kiểm tra dấu in trên thân với hãng cụ thể trước khi đấu.",
+    "applications": "Chỉnh lưu thứ cấp biến áp 50/60 Hz; nguồn tuyến tính, nguồn DC công suất, đầu vào bộ nguồn có tầng DC/DC sau chỉnh lưu, máy sạc theo thiết kế thích hợp.",
+    "datasheet": "https://www.diodes.com/datasheet/download/GBJ2510.pdf",
+    "datasheetSearch": "GBJ2510 Diodes Incorporated DS21221 bridge rectifier datasheet",
+    "example": "NGUỒN VÍ DỤ: biến áp CÁCH LY 12 VAC / 1 A\n(không nối trực tiếp 220 VAC vào mạch thực nghiệm)\n\n   Thứ cấp 12 VAC         GBJ2510\n      dây A ───────────────┐  ┌───────────┐\n                          └──┤ ~       + ├─────┬─────────────┐ +DC\n      dây B ─────────────────┤ ~       - ├──┐  │             │\n                             └───────────┘  │  │+           [R1]\n                                            │ [C1]        220 Ω / 2 W\n                                            │  │-           │\n                                            └──┴─────────────┘ 0V\n\nC1 = 1000 µF / 25 V, tụ hóa, cực (+) nối +DC,\ncực (-) nối 0V; R1 là tải thử.\n\nĐường dẫn dòng ở mỗi nửa chu kỳ:\n  A dương so với B: A → diode cầu → +DC → R1 → -DC → B\n  B dương so với A: B → diode cầu → +DC → R1 → -DC → A",
+    "exampleExplain": "Nguồn vào lấy từ thứ cấp biến áp cách ly 12 VAC (RMS). Qua cầu diode, tụ C1 nạp gần điện áp đỉnh: 12×√2 − 2×VF ≈ 15–16 VDC khi tải nhẹ, KHÔNG phải 12 VDC ổn định. 2 diode dẫn trên mỗi nửa chu kỳ. C1 = 1000 µF/25 V giảm nhấp nhô 100 Hz; R1 = 220 Ω/2 W cho tải khoảng 65–75 mA, công suất xấp xỉ 1.1 W. Công thức ước lượng ΔV≈I/(100×C) ở lưới 50 Hz, ví dụ ≈0.7 Vpp. Tụ vẫn còn điện sau ngắt nguồn: cần xả an toàn. Ví dụ chỉ dành cho nguồn AC điện áp thấp đã cách ly.",
+    "qty": 1,
+    "stockStatus": "verified"
+  },
+  {
+    "id": "r0805-0r",
+    "code": "R0805-0R",
+    "name": "Điện trở dán 0805 0 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 0 Ω (jumper) dùng để nối hai điểm mạch, cấu hình hoặc thay đổi đường tín hiệu trên PCB.",
+    "wiring": "Mắc nối tiếp vào đường mạch cần nối. Không dùng làm cầu chì. Điện trở thực không bằng 0 tuyệt đối; kiểm tra dòng định mức jumper và tiết diện đường đồng.",
+    "limits": "0805; giá trị danh định 0 Ω; dòng cực đại phụ thuộc mã/hãng. Ví dụ Vishay D12/CRCW0805 jumper có thể đến 2.5 A theo datasheet, nhưng chỉ áp dụng đúng mã đó.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "PCB jumper; lựa chọn cấu hình đường tín hiệu; đo đạc và rework.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 0 Ω 1% datasheet",
+    "example": "GPIO1 ─────[ R = 0 Ω, 0805 ]───── GPIO2\n            (liên kết PCB tùy chọn)",
+    "exampleExplain": "Gắn R tạo kết nối; tháo R để ngắt đường mạch khi kiểm tra hoặc thay cấu hình. Không dùng chân GPIO nối đối kháng nhau.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-10r",
+    "code": "R0805-10R",
+    "name": "Điện trở dán 0805 10 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở nối tiếp 10 Ω để giảm dòng xung và giảm ringing trên tín hiệu logic nhanh trong điều kiện phù hợp.",
+    "wiring": "Mắc nối tiếp gần chân xuất tín hiệu. Không mặc định là bảo vệ quá dòng; giá trị chọn theo trở kháng đường truyền, tốc độ cạnh, tải, và công suất điện trở.",
+    "limits": "10 Ω danh định; SMD 0805; ±1%; công suất tham chiếu 0.125 W trong chế độ chuẩn; giới hạn điện áp ≤150 V của dòng Vishay tham chiếu và đồng thời P≤V²/R. Không áp 150 V trực tiếp lên mọi R.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Nối tiếp SPI/GPIO; damping cạnh tín hiệu; mạch RC lọc.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 10 Ω 1% datasheet",
+    "example": "GPIO_OUT 3.3 V ───[ R = 10 Ω, 0805 ]─── GPIO_IN\n                                     (cùng GND)",
+    "exampleExplain": "R nối tiếp tạo điện trở nguồn, giúp làm dịu xung cạnh cao và hạn một phần dòng đột biến; lựa chọn qua kiểm tra dạng sóng. Không nối hai GPIO đang xuất mức ngược nhau.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-22r",
+    "code": "R0805-22R",
+    "name": "Điện trở dán 0805 22 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở nối tiếp 22 Ω để giảm dòng xung và giảm ringing trên tín hiệu logic nhanh trong điều kiện phù hợp.",
+    "wiring": "Mắc nối tiếp gần chân xuất tín hiệu. Không mặc định là bảo vệ quá dòng; giá trị chọn theo trở kháng đường truyền, tốc độ cạnh, tải, và công suất điện trở.",
+    "limits": "22 Ω danh định; SMD 0805; ±1%; công suất tham chiếu 0.125 W trong chế độ chuẩn; giới hạn điện áp ≤150 V của dòng Vishay tham chiếu và đồng thời P≤V²/R. Không áp 150 V trực tiếp lên mọi R.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Nối tiếp SPI/GPIO; damping cạnh tín hiệu; mạch RC lọc.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 22 Ω 1% datasheet",
+    "example": "GPIO_OUT 3.3 V ───[ R = 22 Ω, 0805 ]─── GPIO_IN\n                                     (cùng GND)",
+    "exampleExplain": "R nối tiếp tạo điện trở nguồn, giúp làm dịu xung cạnh cao và hạn một phần dòng đột biến; lựa chọn qua kiểm tra dạng sóng. Không nối hai GPIO đang xuất mức ngược nhau.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-47r",
+    "code": "R0805-47R",
+    "name": "Điện trở dán 0805 47 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở nối tiếp 47 Ω để giảm dòng xung và giảm ringing trên tín hiệu logic nhanh trong điều kiện phù hợp.",
+    "wiring": "Mắc nối tiếp gần chân xuất tín hiệu. Không mặc định là bảo vệ quá dòng; giá trị chọn theo trở kháng đường truyền, tốc độ cạnh, tải, và công suất điện trở.",
+    "limits": "47 Ω danh định; SMD 0805; ±1%; công suất tham chiếu 0.125 W trong chế độ chuẩn; giới hạn điện áp ≤150 V của dòng Vishay tham chiếu và đồng thời P≤V²/R. Không áp 150 V trực tiếp lên mọi R.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Nối tiếp SPI/GPIO; damping cạnh tín hiệu; mạch RC lọc.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 47 Ω 1% datasheet",
+    "example": "GPIO_OUT 3.3 V ───[ R = 47 Ω, 0805 ]─── GPIO_IN\n                                     (cùng GND)",
+    "exampleExplain": "R nối tiếp tạo điện trở nguồn, giúp làm dịu xung cạnh cao và hạn một phần dòng đột biến; lựa chọn qua kiểm tra dạng sóng. Không nối hai GPIO đang xuất mức ngược nhau.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-100r",
+    "code": "R0805-100R",
+    "name": "Điện trở dán 0805 100 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở hạn dòng 100 Ω thường dùng cho LED, đồng thời là phần tử chia áp và đặt dòng.",
+    "wiring": "Mắc nối tiếp LED, đúng chiều LED: anode về phía dương qua R, cathode về GND. Tính I≈(VCC−VF_LED)/R và P=I²R. R không phân cực.",
+    "limits": "100 Ω; 0805 ±1%; P tham khảo 0.125 W tại 70°C (chế độ chuẩn); U làm việc tối đa theo datasheet 150 V nhưng phải thỏa P=U²/R. Nhiệt độ và xung làm giảm khả năng chịu công suất.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Hạn dòng LED; phân áp; điện trở base transistor phù hợp dòng.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 100 Ω 1% datasheet",
+    "example": "+3.3 V ───[ R = 100 Ω ]───|\u003e| LED đỏ ─── GND\n                            A  K",
+    "exampleExplain": "Giả sử LED đỏ có VF≈2.0 V thì I≈(3.3−2.0)/100≈13.0 mA; đo thực tế tùy LED và nguồn. Tại 100 Ω, R tiêu tán khoảng 16.9 mW.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-220r",
+    "code": "R0805-220R",
+    "name": "Điện trở dán 0805 220 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở hạn dòng 220 Ω thường dùng cho LED, đồng thời là phần tử chia áp và đặt dòng.",
+    "wiring": "Mắc nối tiếp LED, đúng chiều LED: anode về phía dương qua R, cathode về GND. Tính I≈(VCC−VF_LED)/R và P=I²R. R không phân cực.",
+    "limits": "220 Ω; 0805 ±1%; P tham khảo 0.125 W tại 70°C (chế độ chuẩn); U làm việc tối đa theo datasheet 150 V nhưng phải thỏa P=U²/R. Nhiệt độ và xung làm giảm khả năng chịu công suất.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Hạn dòng LED; phân áp; điện trở base transistor phù hợp dòng.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 220 Ω 1% datasheet",
+    "example": "+3.3 V ───[ R = 220 Ω ]───|\u003e| LED đỏ ─── GND\n                            A  K",
+    "exampleExplain": "Giả sử LED đỏ có VF≈2.0 V thì I≈(3.3−2.0)/220≈5.9 mA; đo thực tế tùy LED và nguồn. Tại 220 Ω, R tiêu tán khoảng 7.7 mW.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-330r",
+    "code": "R0805-330R",
+    "name": "Điện trở dán 0805 330 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở hạn dòng 330 Ω thường dùng cho LED, đồng thời là phần tử chia áp và đặt dòng.",
+    "wiring": "Mắc nối tiếp LED, đúng chiều LED: anode về phía dương qua R, cathode về GND. Tính I≈(VCC−VF_LED)/R và P=I²R. R không phân cực.",
+    "limits": "330 Ω; 0805 ±1%; P tham khảo 0.125 W tại 70°C (chế độ chuẩn); U làm việc tối đa theo datasheet 150 V nhưng phải thỏa P=U²/R. Nhiệt độ và xung làm giảm khả năng chịu công suất.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Hạn dòng LED; phân áp; điện trở base transistor phù hợp dòng.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 330 Ω 1% datasheet",
+    "example": "+3.3 V ───[ R = 330 Ω ]───|\u003e| LED đỏ ─── GND\n                            A  K",
+    "exampleExplain": "Giả sử LED đỏ có VF≈2.0 V thì I≈(3.3−2.0)/330≈3.9 mA; đo thực tế tùy LED và nguồn. Tại 330 Ω, R tiêu tán khoảng 5.1 mW.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-470r",
+    "code": "R0805-470R",
+    "name": "Điện trở dán 0805 470 Ω ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở hạn dòng 470 Ω thường dùng cho LED, đồng thời là phần tử chia áp và đặt dòng.",
+    "wiring": "Mắc nối tiếp LED, đúng chiều LED: anode về phía dương qua R, cathode về GND. Tính I≈(VCC−VF_LED)/R và P=I²R. R không phân cực.",
+    "limits": "470 Ω; 0805 ±1%; P tham khảo 0.125 W tại 70°C (chế độ chuẩn); U làm việc tối đa theo datasheet 150 V nhưng phải thỏa P=U²/R. Nhiệt độ và xung làm giảm khả năng chịu công suất.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Hạn dòng LED; phân áp; điện trở base transistor phù hợp dòng.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 470 Ω 1% datasheet",
+    "example": "+3.3 V ───[ R = 470 Ω ]───|\u003e| LED đỏ ─── GND\n                            A  K",
+    "exampleExplain": "Giả sử LED đỏ có VF≈2.0 V thì I≈(3.3−2.0)/470≈2.8 mA; đo thực tế tùy LED và nguồn. Tại 470 Ω, R tiêu tán khoảng 3.6 mW.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-1k",
+    "code": "R0805-1K",
+    "name": "Điện trở dán 0805 1 kΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở hạn dòng 1 kΩ thường dùng cho LED, đồng thời là phần tử chia áp và đặt dòng.",
+    "wiring": "Mắc nối tiếp LED, đúng chiều LED: anode về phía dương qua R, cathode về GND. Tính I≈(VCC−VF_LED)/R và P=I²R. R không phân cực.",
+    "limits": "1 kΩ; 0805 ±1%; P tham khảo 0.125 W tại 70°C (chế độ chuẩn); U làm việc tối đa theo datasheet 150 V nhưng phải thỏa P=U²/R. Nhiệt độ và xung làm giảm khả năng chịu công suất.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Hạn dòng LED; phân áp; điện trở base transistor phù hợp dòng.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 1 kΩ 1% datasheet",
+    "example": "+3.3 V ───[ R = 1 kΩ ]───|\u003e| LED đỏ ─── GND\n                            A  K",
+    "exampleExplain": "Giả sử LED đỏ có VF≈2.0 V thì I≈(3.3−2.0)/1000≈1.3 mA; đo thực tế tùy LED và nguồn. Tại 1 kΩ, R tiêu tán khoảng 1.7 mW.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-2k2",
+    "code": "R0805-2K2",
+    "name": "Điện trở dán 0805 2.2 kΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 2.2 kΩ dùng kéo lên/kéo xuống chân số, định thiên tín hiệu và tạo mạng chia áp.",
+    "wiring": "Pull-up: nối R từ chân INPUT lên 3.3 V, nút nhấn kéo input xuống GND; cần cấu hình INPUT, không kéo GPIO lên điện áp cao hơn giới hạn cho phép. R không phân cực.",
+    "limits": "2.2 kΩ danh định; 0805 ±1%, 0.125 W tham khảo. Dòng khi nhấn tại 3.3V ≈1.50 mA. Giới hạn công suất/điện áp đều phải kiểm tra.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Pull-up/pull-down; nút nhấn; cảm biến có đầu ra open-drain; phân áp.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 2.2 kΩ 1% datasheet",
+    "example": "3.3 V ─────[ R = 2.2 kΩ ]────┬──── GPIO INPUT\n                            │\n                           [NÚT]\n                            │\n                           GND",
+    "exampleExplain": "Khi nhả nút, input được kéo lên 3.3V (HIGH). Khi nhấn, input về GND (LOW). Dòng qua R khi nhấn ≈1.50 mA. Nên chống dội phím bằng phần mềm hoặc mạch RC nếu cần.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-4k7",
+    "code": "R0805-4K7",
+    "name": "Điện trở dán 0805 4.7 kΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 4.7 kΩ dùng kéo lên/kéo xuống chân số, định thiên tín hiệu và tạo mạng chia áp.",
+    "wiring": "Pull-up: nối R từ chân INPUT lên 3.3 V, nút nhấn kéo input xuống GND; cần cấu hình INPUT, không kéo GPIO lên điện áp cao hơn giới hạn cho phép. R không phân cực.",
+    "limits": "4.7 kΩ danh định; 0805 ±1%, 0.125 W tham khảo. Dòng khi nhấn tại 3.3V ≈0.70 mA. Giới hạn công suất/điện áp đều phải kiểm tra.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Pull-up/pull-down; nút nhấn; cảm biến có đầu ra open-drain; phân áp.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 4.7 kΩ 1% datasheet",
+    "example": "3.3 V ─────[ R = 4.7 kΩ ]────┬──── GPIO INPUT\n                            │\n                           [NÚT]\n                            │\n                           GND",
+    "exampleExplain": "Khi nhả nút, input được kéo lên 3.3V (HIGH). Khi nhấn, input về GND (LOW). Dòng qua R khi nhấn ≈0.70 mA. Nên chống dội phím bằng phần mềm hoặc mạch RC nếu cần.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-10k",
+    "code": "R0805-10K",
+    "name": "Điện trở dán 0805 10 kΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 10 kΩ dùng kéo lên/kéo xuống chân số, định thiên tín hiệu và tạo mạng chia áp.",
+    "wiring": "Pull-up: nối R từ chân INPUT lên 3.3 V, nút nhấn kéo input xuống GND; cần cấu hình INPUT, không kéo GPIO lên điện áp cao hơn giới hạn cho phép. R không phân cực.",
+    "limits": "10 kΩ danh định; 0805 ±1%, 0.125 W tham khảo. Dòng khi nhấn tại 3.3V ≈0.33 mA. Giới hạn công suất/điện áp đều phải kiểm tra.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Pull-up/pull-down; nút nhấn; cảm biến có đầu ra open-drain; phân áp.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 10 kΩ 1% datasheet",
+    "example": "3.3 V ─────[ R = 10 kΩ ]────┬──── GPIO INPUT\n                            │\n                           [NÚT]\n                            │\n                           GND",
+    "exampleExplain": "Khi nhả nút, input được kéo lên 3.3V (HIGH). Khi nhấn, input về GND (LOW). Dòng qua R khi nhấn ≈0.33 mA. Nên chống dội phím bằng phần mềm hoặc mạch RC nếu cần.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-22k",
+    "code": "R0805-22K",
+    "name": "Điện trở dán 0805 22 kΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 22 kΩ dùng kéo lên/kéo xuống chân số, định thiên tín hiệu và tạo mạng chia áp.",
+    "wiring": "Pull-up: nối R từ chân INPUT lên 3.3 V, nút nhấn kéo input xuống GND; cần cấu hình INPUT, không kéo GPIO lên điện áp cao hơn giới hạn cho phép. R không phân cực.",
+    "limits": "22 kΩ danh định; 0805 ±1%, 0.125 W tham khảo. Dòng khi nhấn tại 3.3V ≈0.15 mA. Giới hạn công suất/điện áp đều phải kiểm tra.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Pull-up/pull-down; nút nhấn; cảm biến có đầu ra open-drain; phân áp.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 22 kΩ 1% datasheet",
+    "example": "3.3 V ─────[ R = 22 kΩ ]────┬──── GPIO INPUT\n                            │\n                           [NÚT]\n                            │\n                           GND",
+    "exampleExplain": "Khi nhả nút, input được kéo lên 3.3V (HIGH). Khi nhấn, input về GND (LOW). Dòng qua R khi nhấn ≈0.15 mA. Nên chống dội phím bằng phần mềm hoặc mạch RC nếu cần.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-47k",
+    "code": "R0805-47K",
+    "name": "Điện trở dán 0805 47 kΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 47 kΩ có trị số cao, dùng phân cực đầu vào trở kháng cao, chia áp và làm đường xả điện tích.",
+    "wiring": "Mắc kéo xuống cho input CMOS hoặc ghép vào bộ chia áp. Trị số cao nhạy nhiễu/rò điện; không dùng một mình cho ngõ vào công nghiệp cần kháng nhiễu. R không phân cực.",
+    "limits": "47 kΩ; 0805 ±1%, 0.125 W tham khảo; điện áp làm việc còn tùy mã (mẫu 0805 tối đa 150V). Riêng 1 MΩ gây nguồn trở kháng cao, cần cân nhắc ADC.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Pulldown CMOS; chia áp; đường xả tụ nhỏ; mạch đo điện áp trở kháng cao.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 47 kΩ 1% datasheet",
+    "example": "TÍN HIỆU 0/3.3 V ────────┬──── GPIO INPUT\n                           │\n                     [ R = 47 kΩ ]\n                           │\n                          GND",
+    "exampleExplain": "Khi nguồn tín hiệu ở trạng thái high-Z, R giúp nút input trở về LOW, tránh trôi mức. Giá trị càng cao càng ít hao điện, nhưng càng dễ bị nhiễu và rò.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-100k",
+    "code": "R0805-100K",
+    "name": "Điện trở dán 0805 100 kΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 100 kΩ có trị số cao, dùng phân cực đầu vào trở kháng cao, chia áp và làm đường xả điện tích.",
+    "wiring": "Mắc kéo xuống cho input CMOS hoặc ghép vào bộ chia áp. Trị số cao nhạy nhiễu/rò điện; không dùng một mình cho ngõ vào công nghiệp cần kháng nhiễu. R không phân cực.",
+    "limits": "100 kΩ; 0805 ±1%, 0.125 W tham khảo; điện áp làm việc còn tùy mã (mẫu 0805 tối đa 150V). Riêng 1 MΩ gây nguồn trở kháng cao, cần cân nhắc ADC.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Pulldown CMOS; chia áp; đường xả tụ nhỏ; mạch đo điện áp trở kháng cao.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 100 kΩ 1% datasheet",
+    "example": "TÍN HIỆU 0/3.3 V ────────┬──── GPIO INPUT\n                           │\n                     [ R = 100 kΩ ]\n                           │\n                          GND",
+    "exampleExplain": "Khi nguồn tín hiệu ở trạng thái high-Z, R giúp nút input trở về LOW, tránh trôi mức. Giá trị càng cao càng ít hao điện, nhưng càng dễ bị nhiễu và rò.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r0805-1m",
+    "code": "R0805-1M",
+    "name": "Điện trở dán 0805 1 MΩ ±1% (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở 1 MΩ có trị số cao, dùng phân cực đầu vào trở kháng cao, chia áp và làm đường xả điện tích.",
+    "wiring": "Mắc kéo xuống cho input CMOS hoặc ghép vào bộ chia áp. Trị số cao nhạy nhiễu/rò điện; không dùng một mình cho ngõ vào công nghiệp cần kháng nhiễu. R không phân cực.",
+    "limits": "1 MΩ; 0805 ±1%, 0.125 W tham khảo; điện áp làm việc còn tùy mã (mẫu 0805 tối đa 150V). Riêng 1 MΩ gây nguồn trở kháng cao, cần cân nhắc ADC.",
+    "pinout": "2 đầu không phân cực; footprint chuẩn 0805 (2012 metric), kiểm tra kích thước pad theo nhà sản xuất.",
+    "applications": "Pulldown CMOS; chia áp; đường xả tụ nhỏ; mạch đo điện áp trở kháng cao.",
+    "datasheet": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
+    "datasheetSearch": "Vishay D12 CRCW0805 1 MΩ 1% datasheet",
+    "example": "TÍN HIỆU 0/3.3 V ────────┬──── GPIO INPUT\n                           │\n                     [ R = 1 MΩ ]\n                           │\n                          GND",
+    "exampleExplain": "Khi nguồn tín hiệu ở trạng thái high-Z, R giúp nút input trở về LOW, tránh trôi mức. Giá trị càng cao càng ít hao điện, nhưng càng dễ bị nhiễu và rò.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r-axial-025w-1k",
+    "code": "R-AXIAL-1K-0.25W",
+    "name": "Điện trở chân cắm 1 kΩ, 1/4 W (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở xuyên lỗ 1 kΩ giới hạn dòng hoặc kéo mức, thích hợp breadboard và mạch thử.",
+    "wiring": "Mắc nối tiếp dòng hoặc từ GPIO sang 3.3 V (pull-up). Không phân cực. Với mạch thực tế, kiểm tra sai số 1%/5%, nhiệt độ, công suất và kiểu chân trước khi chọn footprint.",
+    "limits": "Giá trị 1 kΩ; 0.25 W chỉ là cấu hình tham khảo, không phải mọi điện trở xuyên lỗ đều cùng định mức; U tối đa phụ thuộc nhà sản xuất.",
+    "pinout": "Hai dây dẫn xuyên lỗ, không phân cực. Bước chân/chiều dài thân chưa chốt; tránh dùng footprint theo giá trị điện trở.",
+    "applications": "Breadboard; hạn dòng LED; nút nhấn pull-up/pull-down.",
+    "datasheet": "",
+    "datasheetSearch": "metal film axial resistor 1 kΩ 0.25W 1 percent datasheet Vishay Yageo",
+    "example": "3.3 V ──[ R = 1 kΩ, 1/4W ]──┬── INPUT\n                            │\n                          [NÚT]\n                            │\n                           GND",
+    "exampleExplain": "R kéo INPUT lên HIGH; khi ấn nút xuống GND thì LOW. Ở 3.3 V, công suất R nhỏ hơn nhiều 0.25 W.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "r-axial-025w-10k",
+    "code": "R-AXIAL-10K-0.25W",
+    "name": "Điện trở chân cắm 10 kΩ, 1/4 W (mẫu)",
+    "category": "Điện trở",
+    "summary": "Điện trở xuyên lỗ 10 kΩ giới hạn dòng hoặc kéo mức, thích hợp breadboard và mạch thử.",
+    "wiring": "Mắc nối tiếp dòng hoặc từ GPIO sang 3.3 V (pull-up). Không phân cực. Với mạch thực tế, kiểm tra sai số 1%/5%, nhiệt độ, công suất và kiểu chân trước khi chọn footprint.",
+    "limits": "Giá trị 10 kΩ; 0.25 W chỉ là cấu hình tham khảo, không phải mọi điện trở xuyên lỗ đều cùng định mức; U tối đa phụ thuộc nhà sản xuất.",
+    "pinout": "Hai dây dẫn xuyên lỗ, không phân cực. Bước chân/chiều dài thân chưa chốt; tránh dùng footprint theo giá trị điện trở.",
+    "applications": "Breadboard; hạn dòng LED; nút nhấn pull-up/pull-down.",
+    "datasheet": "",
+    "datasheetSearch": "metal film axial resistor 10 kΩ 0.25W 1 percent datasheet Vishay Yageo",
+    "example": "3.3 V ──[ R = 10 kΩ, 1/4W ]──┬── INPUT\n                            │\n                          [NÚT]\n                            │\n                           GND",
+    "exampleExplain": "R kéo INPUT lên HIGH; khi ấn nút xuống GND thì LOW. Ở 3.3 V, công suất R nhỏ hơn nhiều 0.25 W.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "pot-10k-linear",
+    "code": "POT-10K-B",
+    "name": "Biến trở / chiết áp 10 kΩ tuyến tính (mẫu)",
+    "category": "Biến trở / Chiết áp",
+    "summary": "Điện trở 3 chân có con chạy; điều chỉnh phân áp liên tục từ nguồn đến GND.",
+    "wiring": "Hai chân ngoài vào 3.3 V và GND, chân giữa (wiper) đi tới ADC 3.3 V; thêm 100 nF từ ADC xuống GND nếu cần giảm nhiễu. Không nối chiết áp lên 5 V nếu ADC chỉ nhận 3.3 V.",
+    "limits": "10 kΩ tổng; đặc tuyến B tuyến tính (quy ước phổ biến, cần kiểm mã thật); điện áp/công suất/góc quay phụ thuộc model.",
+    "pinout": "3 chân: hai đầu dải điện trở và một wiper, vị trí vật lý/thứ tự chân phụ thuộc nhà sản xuất.",
+    "applications": "Điều chỉnh setpoint, tốc độ, độ sáng qua ADC; chia áp điều khiển.",
+    "datasheet": "",
+    "datasheetSearch": "10K linear potentiometer datasheet B10K 3 pin manufacturer",
+    "example": "3.3 V ──────┐\n              [ P1 10 kΩ ]───┬── ADC_IN\nGND ──────────┘             │\n                          [C1] 100 nF\n                            │\n                           GND",
+    "exampleExplain": "Hai chân ngoài định nghĩa 0–3.3 V, wiper lấy một phần điện áp để ADC đo. Bố trí C1 gần ADC, kiểm tra giới hạn nguồn trở kháng ADC.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-22p-0603-c0g",
+    "code": "C-MLCC-22P-0603-C0G",
+    "name": "Tụ gốm 22 pF, 0603 C0G, 50 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 22 pF không phân cực, dùng trong RC filter, bù nhiễu cao tần hoặc mạng định thời nhỏ.",
+    "wiring": "Đặt tụ từ nút cần lọc xuống GND, kết hợp R=10 kΩ nối tiếp để tạo bộ lọc thông thấp RC; với C0G, C0G có độ ổn định cao hơn X7R trong mạch chính xác.",
+    "limits": "22 pF; ví dụ 0603/C0G 50 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 0603 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Mạch lọc RC; định thời; ghép nhiễu cao tần; bù lọc đường tín hiệu.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1001_C0G_200C_SMD.pdf",
+    "datasheetSearch": "KEMET 0603 22 pF C0G 50 V multilayer ceramic datasheet",
+    "example": "Tín hiệu ───[R1 = 10 kΩ]───┬──── Vout\n                           │\n                        [C1 = 22 pF]\n                           │\n                          GND",
+    "exampleExplain": "R1 và C1 tạo bộ lọc RC thông thấp có tần số cắt fc≈1/(2πRC)≈723,432 Hz, dùng cho tín hiệu biên độ nhỏ. Tránh hiểu là lọc nhiễu mọi tần số: phụ thuộc R, C và tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-100p-0603-c0g",
+    "code": "C-MLCC-100P-0603-C0G",
+    "name": "Tụ gốm 100 pF, 0603 C0G, 50 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 100 pF không phân cực, dùng trong RC filter, bù nhiễu cao tần hoặc mạng định thời nhỏ.",
+    "wiring": "Đặt tụ từ nút cần lọc xuống GND, kết hợp R=10 kΩ nối tiếp để tạo bộ lọc thông thấp RC; với C0G, C0G có độ ổn định cao hơn X7R trong mạch chính xác.",
+    "limits": "100 pF; ví dụ 0603/C0G 50 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 0603 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Mạch lọc RC; định thời; ghép nhiễu cao tần; bù lọc đường tín hiệu.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1001_C0G_200C_SMD.pdf",
+    "datasheetSearch": "KEMET 0603 100 pF C0G 50 V multilayer ceramic datasheet",
+    "example": "Tín hiệu ───[R1 = 10 kΩ]───┬──── Vout\n                           │\n                        [C1 = 100 pF]\n                           │\n                          GND",
+    "exampleExplain": "R1 và C1 tạo bộ lọc RC thông thấp có tần số cắt fc≈1/(2πRC)≈159,155 Hz, dùng cho tín hiệu biên độ nhỏ. Tránh hiểu là lọc nhiễu mọi tần số: phụ thuộc R, C và tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-1n-0603-x7r",
+    "code": "C-MLCC-1N-0603-X7R",
+    "name": "Tụ gốm 1 nF, 0603 X7R, 50 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 1 nF không phân cực, dùng trong RC filter, bù nhiễu cao tần hoặc mạng định thời nhỏ.",
+    "wiring": "Đặt tụ từ nút cần lọc xuống GND, kết hợp R=10 kΩ nối tiếp để tạo bộ lọc thông thấp RC; với X7R, C0G có độ ổn định cao hơn X7R trong mạch chính xác.",
+    "limits": "1 nF; ví dụ 0603/X7R 50 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 0603 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Mạch lọc RC; định thời; ghép nhiễu cao tần; bù lọc đường tín hiệu.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1002_X7R_SMD.pdf",
+    "datasheetSearch": "KEMET 0603 1 nF X7R 50 V multilayer ceramic datasheet",
+    "example": "Tín hiệu ───[R1 = 10 kΩ]───┬──── Vout\n                           │\n                        [C1 = 1 nF]\n                           │\n                          GND",
+    "exampleExplain": "R1 và C1 tạo bộ lọc RC thông thấp có tần số cắt fc≈1/(2πRC)≈15,915 Hz, dùng cho tín hiệu biên độ nhỏ. Tránh hiểu là lọc nhiễu mọi tần số: phụ thuộc R, C và tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-10n-0603-x7r",
+    "code": "C-MLCC-10N-0603-X7R",
+    "name": "Tụ gốm 10 nF, 0603 X7R, 50 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 10 nF không phân cực, dùng trong RC filter, bù nhiễu cao tần hoặc mạng định thời nhỏ.",
+    "wiring": "Đặt tụ từ nút cần lọc xuống GND, kết hợp R=10 kΩ nối tiếp để tạo bộ lọc thông thấp RC; với X7R, C0G có độ ổn định cao hơn X7R trong mạch chính xác.",
+    "limits": "10 nF; ví dụ 0603/X7R 50 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 0603 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Mạch lọc RC; định thời; ghép nhiễu cao tần; bù lọc đường tín hiệu.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1002_X7R_SMD.pdf",
+    "datasheetSearch": "KEMET 0603 10 nF X7R 50 V multilayer ceramic datasheet",
+    "example": "Tín hiệu ───[R1 = 10 kΩ]───┬──── Vout\n                           │\n                        [C1 = 10 nF]\n                           │\n                          GND",
+    "exampleExplain": "R1 và C1 tạo bộ lọc RC thông thấp có tần số cắt fc≈1/(2πRC)≈1,592 Hz, dùng cho tín hiệu biên độ nhỏ. Tránh hiểu là lọc nhiễu mọi tần số: phụ thuộc R, C và tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-100n-0603-x7r",
+    "code": "C-MLCC-100N-0603-X7R",
+    "name": "Tụ gốm 100 nF, 0603 X7R, 50 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 100 nF không phân cực, dự trữ điện tích cục bộ trên đường nguồn và tạo đường trở kháng thấp cho nhiễu nguồn cao tần.",
+    "wiring": "Mắc song song VCC–GND, đặt sát chân cấp nguồn IC/bộ DC-DC. Cần tụ 100 nF gần IC và dung lượng lớn hơn ở đầu nguồn theo thiết kế. X7R bị giảm điện dung hiệu dụng do DC bias; không coi 100 nF danh định là dung lượng thực khi mang điện áp.",
+    "limits": "100 nF; ví dụ 0603/X7R 50 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 0603 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Decoupling IC, MCU/ESP32; đầu ra regulator; lọc nguồn DC; giảm sụt áp ngắn hạn.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1002_X7R_SMD.pdf",
+    "datasheetSearch": "KEMET 0603 100 nF X7R 50 V multilayer ceramic datasheet",
+    "example": "Nguồn 3.3 V ──────┬───────── VCC của IC\n                  │\n              [C1 100 nF]\n                  │\nGND ──────────────┴───────── GND của IC",
+    "exampleExplain": "C1 cấp dòng đột biến ngay gần IC và shunt thành phần nhiễu nguồn xuống GND. Dòng không «biến mất» mà khép mạch qua tụ; giữ vòng dòng ngắn. Tính hiệu dụng theo đặc tính bias tại 3.3 V.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-1u-0805-x7r",
+    "code": "C-MLCC-1U-0805-X7R",
+    "name": "Tụ gốm 1 µF, 0805 X7R, 25 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 1 µF không phân cực, dự trữ điện tích cục bộ trên đường nguồn và tạo đường trở kháng thấp cho nhiễu nguồn cao tần.",
+    "wiring": "Mắc song song VCC–GND, đặt sát chân cấp nguồn IC/bộ DC-DC. Cần tụ 100 nF gần IC và dung lượng lớn hơn ở đầu nguồn theo thiết kế. X7R bị giảm điện dung hiệu dụng do DC bias; không coi 1 µF danh định là dung lượng thực khi mang điện áp.",
+    "limits": "1 µF; ví dụ 0805/X7R 25 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 0805 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Decoupling IC, MCU/ESP32; đầu ra regulator; lọc nguồn DC; giảm sụt áp ngắn hạn.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1002_X7R_SMD.pdf",
+    "datasheetSearch": "KEMET 0805 1 µF X7R 25 V multilayer ceramic datasheet",
+    "example": "Nguồn 3.3 V ──────┬───────── VCC của IC\n                  │\n              [C1 1 µF]\n                  │\nGND ──────────────┴───────── GND của IC",
+    "exampleExplain": "C1 cấp dòng đột biến ngay gần IC và shunt thành phần nhiễu nguồn xuống GND. Dòng không «biến mất» mà khép mạch qua tụ; giữ vòng dòng ngắn. Tính hiệu dụng theo đặc tính bias tại 3.3 V.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-4u7-0805-x7r",
+    "code": "C-MLCC-4U7-0805-X7R",
+    "name": "Tụ gốm 4.7 µF, 0805 X7R, 25 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 4.7 µF không phân cực, dự trữ điện tích cục bộ trên đường nguồn và tạo đường trở kháng thấp cho nhiễu nguồn cao tần.",
+    "wiring": "Mắc song song VCC–GND, đặt sát chân cấp nguồn IC/bộ DC-DC. Cần tụ 100 nF gần IC và dung lượng lớn hơn ở đầu nguồn theo thiết kế. X7R bị giảm điện dung hiệu dụng do DC bias; không coi 4.7 µF danh định là dung lượng thực khi mang điện áp.",
+    "limits": "4.7 µF; ví dụ 0805/X7R 25 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 0805 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Decoupling IC, MCU/ESP32; đầu ra regulator; lọc nguồn DC; giảm sụt áp ngắn hạn.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1002_X7R_SMD.pdf",
+    "datasheetSearch": "KEMET 0805 4.7 µF X7R 25 V multilayer ceramic datasheet",
+    "example": "Nguồn 3.3 V ──────┬───────── VCC của IC\n                  │\n              [C1 4.7 µF]\n                  │\nGND ──────────────┴───────── GND của IC",
+    "exampleExplain": "C1 cấp dòng đột biến ngay gần IC và shunt thành phần nhiễu nguồn xuống GND. Dòng không «biến mất» mà khép mạch qua tụ; giữ vòng dòng ngắn. Tính hiệu dụng theo đặc tính bias tại 3.3 V.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-10u-1206-x7r",
+    "code": "C-MLCC-10U-1206-X7R",
+    "name": "Tụ gốm 10 µF, 1206 X7R, 25 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 10 µF không phân cực, dự trữ điện tích cục bộ trên đường nguồn và tạo đường trở kháng thấp cho nhiễu nguồn cao tần.",
+    "wiring": "Mắc song song VCC–GND, đặt sát chân cấp nguồn IC/bộ DC-DC. Cần tụ 100 nF gần IC và dung lượng lớn hơn ở đầu nguồn theo thiết kế. X7R bị giảm điện dung hiệu dụng do DC bias; không coi 10 µF danh định là dung lượng thực khi mang điện áp.",
+    "limits": "10 µF; ví dụ 1206/X7R 25 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 1206 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Decoupling IC, MCU/ESP32; đầu ra regulator; lọc nguồn DC; giảm sụt áp ngắn hạn.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1002_X7R_SMD.pdf",
+    "datasheetSearch": "KEMET 1206 10 µF X7R 25 V multilayer ceramic datasheet",
+    "example": "Nguồn 3.3 V ──────┬───────── VCC của IC\n                  │\n              [C1 10 µF]\n                  │\nGND ──────────────┴───────── GND của IC",
+    "exampleExplain": "C1 cấp dòng đột biến ngay gần IC và shunt thành phần nhiễu nguồn xuống GND. Dòng không «biến mất» mà khép mạch qua tụ; giữ vòng dòng ngắn. Tính hiệu dụng theo đặc tính bias tại 3.3 V.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-mlcc-22u-1210-x7r",
+    "code": "C-MLCC-22U-1210-X7R",
+    "name": "Tụ gốm 22 µF, 1210 X7R, 25 V (mẫu)",
+    "category": "Tụ gốm (MLCC)",
+    "summary": "Tụ gốm MLCC 22 µF không phân cực, dự trữ điện tích cục bộ trên đường nguồn và tạo đường trở kháng thấp cho nhiễu nguồn cao tần.",
+    "wiring": "Mắc song song VCC–GND, đặt sát chân cấp nguồn IC/bộ DC-DC. Cần tụ 100 nF gần IC và dung lượng lớn hơn ở đầu nguồn theo thiết kế. X7R bị giảm điện dung hiệu dụng do DC bias; không coi 22 µF danh định là dung lượng thực khi mang điện áp.",
+    "limits": "22 µF; ví dụ 1210/X7R 25 V; không phân cực; X7R thường biến đổi điện dung theo nhiệt độ ±15% trong −55…125 °C; nếu C0G thì ổn định hơn. Phải tra đúng PN để xác nhận chịu áp, dung sai, dòng ripple và DC bias.",
+    "pinout": "Hai đầu SMD, không phân cực; footprint 1210 EIA; kiểm đúng độ dày/chiều rộng linh kiện.",
+    "applications": "Decoupling IC, MCU/ESP32; đầu ra regulator; lọc nguồn DC; giảm sụt áp ngắn hạn.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_C1002_X7R_SMD.pdf",
+    "datasheetSearch": "KEMET 1210 22 µF X7R 25 V multilayer ceramic datasheet",
+    "example": "Nguồn 3.3 V ──────┬───────── VCC của IC\n                  │\n              [C1 22 µF]\n                  │\nGND ──────────────┴───────── GND của IC",
+    "exampleExplain": "C1 cấp dòng đột biến ngay gần IC và shunt thành phần nhiễu nguồn xuống GND. Dòng không «biến mất» mà khép mạch qua tụ; giữ vòng dòng ngắn. Tính hiệu dụng theo đặc tính bias tại 3.3 V.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-elec-10u-25v",
+    "code": "C-EL-10U-25V",
+    "name": "Tụ hóa 10 µF / 25 V, chân cắm (mẫu)",
+    "category": "Tụ hóa / Tụ điện phân",
+    "summary": "Tụ hóa nhôm 10 µF, phần tử tích điện dung lượng lớn để giảm gợn nguồn và dự trữ năng lượng khi tải thay đổi.",
+    "wiring": "Mắc song song +DC–GND; chân (+) vào +DC, chân (−) có sọc đánh dấu ở thân về GND. Không đảo cực. Điện áp làm việc \u003c định mức, kiểm tra ESR, dòng ripple và tuổi thọ.",
+    "limits": "10 µF / 25 V DC (mẫu), thường dung sai ±20% tùy PN; phải kiểm ESR, dòng gợn định mức, nhiệt độ 105°C (mẫu UPM) và kích thước thân trước khi mua. Không dùng nguồn \u003e25 V hoặc đảo cực.",
+    "pinout": "2 chân xuyên lỗ: +, −; chân − thường có sọc trên vỏ; footprint/khoảng cách chân phụ thuộc đường kính thân.",
+    "applications": "Lọc sau cầu chỉnh lưu; lọc nguồn linear; dự trữ nguồn DC; giảm dao động điện áp tải.",
+    "datasheet": "https://www.nichicon.com/en-us/datasheet/7481/",
+    "datasheetSearch": "Nichicon UPM 10 µF 25V radial aluminum electrolytic datasheet",
+    "example": "Nguồn DC + ──────────┬──────── TẢI\n                       │\n                    + [C1 10 µF/25V]\n                    −  │\nNguồn DC − ──────────┴──────── GND",
+    "exampleExplain": "C1 nạp khi nguồn tăng và phóng vào tải lúc nguồn giảm. Với chỉnh lưu cầu 50 Hz, dòng tải 50 mA, ước lượng gợn ΔV≈I/(100×C)≈50.00 Vpp; công thức chỉ là gần đúng, không bao gồm ESR, diode, dạng tải. Nếu nguồn USB/DC ổn định, tác dụng chủ yếu là chống sụt áp và đáp ứng tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-elec-47u-25v",
+    "code": "C-EL-47U-25V",
+    "name": "Tụ hóa 47 µF / 25 V, chân cắm (mẫu)",
+    "category": "Tụ hóa / Tụ điện phân",
+    "summary": "Tụ hóa nhôm 47 µF, phần tử tích điện dung lượng lớn để giảm gợn nguồn và dự trữ năng lượng khi tải thay đổi.",
+    "wiring": "Mắc song song +DC–GND; chân (+) vào +DC, chân (−) có sọc đánh dấu ở thân về GND. Không đảo cực. Điện áp làm việc \u003c định mức, kiểm tra ESR, dòng ripple và tuổi thọ.",
+    "limits": "47 µF / 25 V DC (mẫu), thường dung sai ±20% tùy PN; phải kiểm ESR, dòng gợn định mức, nhiệt độ 105°C (mẫu UPM) và kích thước thân trước khi mua. Không dùng nguồn \u003e25 V hoặc đảo cực.",
+    "pinout": "2 chân xuyên lỗ: +, −; chân − thường có sọc trên vỏ; footprint/khoảng cách chân phụ thuộc đường kính thân.",
+    "applications": "Lọc sau cầu chỉnh lưu; lọc nguồn linear; dự trữ nguồn DC; giảm dao động điện áp tải.",
+    "datasheet": "https://www.nichicon.com/en-us/datasheet/7481/",
+    "datasheetSearch": "Nichicon UPM 47 µF 25V radial aluminum electrolytic datasheet",
+    "example": "Nguồn DC + ──────────┬──────── TẢI\n                       │\n                    + [C1 47 µF/25V]\n                    −  │\nNguồn DC − ──────────┴──────── GND",
+    "exampleExplain": "C1 nạp khi nguồn tăng và phóng vào tải lúc nguồn giảm. Với chỉnh lưu cầu 50 Hz, dòng tải 50 mA, ước lượng gợn ΔV≈I/(100×C)≈10.64 Vpp; công thức chỉ là gần đúng, không bao gồm ESR, diode, dạng tải. Nếu nguồn USB/DC ổn định, tác dụng chủ yếu là chống sụt áp và đáp ứng tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-elec-100u-25v",
+    "code": "C-EL-100U-25V",
+    "name": "Tụ hóa 100 µF / 25 V, chân cắm (mẫu)",
+    "category": "Tụ hóa / Tụ điện phân",
+    "summary": "Tụ hóa nhôm 100 µF, phần tử tích điện dung lượng lớn để giảm gợn nguồn và dự trữ năng lượng khi tải thay đổi.",
+    "wiring": "Mắc song song +DC–GND; chân (+) vào +DC, chân (−) có sọc đánh dấu ở thân về GND. Không đảo cực. Điện áp làm việc \u003c định mức, kiểm tra ESR, dòng ripple và tuổi thọ.",
+    "limits": "100 µF / 25 V DC (mẫu), thường dung sai ±20% tùy PN; phải kiểm ESR, dòng gợn định mức, nhiệt độ 105°C (mẫu UPM) và kích thước thân trước khi mua. Không dùng nguồn \u003e25 V hoặc đảo cực.",
+    "pinout": "2 chân xuyên lỗ: +, −; chân − thường có sọc trên vỏ; footprint/khoảng cách chân phụ thuộc đường kính thân.",
+    "applications": "Lọc sau cầu chỉnh lưu; lọc nguồn linear; dự trữ nguồn DC; giảm dao động điện áp tải.",
+    "datasheet": "https://www.nichicon.com/en-us/datasheet/7481/",
+    "datasheetSearch": "Nichicon UPM 100 µF 25V radial aluminum electrolytic datasheet",
+    "example": "Nguồn DC + ──────────┬──────── TẢI\n                       │\n                    + [C1 100 µF/25V]\n                    −  │\nNguồn DC − ──────────┴──────── GND",
+    "exampleExplain": "C1 nạp khi nguồn tăng và phóng vào tải lúc nguồn giảm. Với chỉnh lưu cầu 50 Hz, dòng tải 50 mA, ước lượng gợn ΔV≈I/(100×C)≈5.00 Vpp; công thức chỉ là gần đúng, không bao gồm ESR, diode, dạng tải. Nếu nguồn USB/DC ổn định, tác dụng chủ yếu là chống sụt áp và đáp ứng tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-elec-220u-25v",
+    "code": "C-EL-220U-25V",
+    "name": "Tụ hóa 220 µF / 25 V, chân cắm (mẫu)",
+    "category": "Tụ hóa / Tụ điện phân",
+    "summary": "Tụ hóa nhôm 220 µF, phần tử tích điện dung lượng lớn để giảm gợn nguồn và dự trữ năng lượng khi tải thay đổi.",
+    "wiring": "Mắc song song +DC–GND; chân (+) vào +DC, chân (−) có sọc đánh dấu ở thân về GND. Không đảo cực. Điện áp làm việc \u003c định mức, kiểm tra ESR, dòng ripple và tuổi thọ.",
+    "limits": "220 µF / 25 V DC (mẫu), thường dung sai ±20% tùy PN; phải kiểm ESR, dòng gợn định mức, nhiệt độ 105°C (mẫu UPM) và kích thước thân trước khi mua. Không dùng nguồn \u003e25 V hoặc đảo cực.",
+    "pinout": "2 chân xuyên lỗ: +, −; chân − thường có sọc trên vỏ; footprint/khoảng cách chân phụ thuộc đường kính thân.",
+    "applications": "Lọc sau cầu chỉnh lưu; lọc nguồn linear; dự trữ nguồn DC; giảm dao động điện áp tải.",
+    "datasheet": "https://www.nichicon.com/en-us/datasheet/7481/",
+    "datasheetSearch": "Nichicon UPM 220 µF 25V radial aluminum electrolytic datasheet",
+    "example": "Nguồn DC + ──────────┬──────── TẢI\n                       │\n                    + [C1 220 µF/25V]\n                    −  │\nNguồn DC − ──────────┴──────── GND",
+    "exampleExplain": "C1 nạp khi nguồn tăng và phóng vào tải lúc nguồn giảm. Với chỉnh lưu cầu 50 Hz, dòng tải 50 mA, ước lượng gợn ΔV≈I/(100×C)≈2.27 Vpp; công thức chỉ là gần đúng, không bao gồm ESR, diode, dạng tải. Nếu nguồn USB/DC ổn định, tác dụng chủ yếu là chống sụt áp và đáp ứng tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-elec-470u-25v",
+    "code": "C-EL-470U-25V",
+    "name": "Tụ hóa 470 µF / 25 V, chân cắm (mẫu)",
+    "category": "Tụ hóa / Tụ điện phân",
+    "summary": "Tụ hóa nhôm 470 µF, phần tử tích điện dung lượng lớn để giảm gợn nguồn và dự trữ năng lượng khi tải thay đổi.",
+    "wiring": "Mắc song song +DC–GND; chân (+) vào +DC, chân (−) có sọc đánh dấu ở thân về GND. Không đảo cực. Điện áp làm việc \u003c định mức, kiểm tra ESR, dòng ripple và tuổi thọ.",
+    "limits": "470 µF / 25 V DC (mẫu), thường dung sai ±20% tùy PN; phải kiểm ESR, dòng gợn định mức, nhiệt độ 105°C (mẫu UPM) và kích thước thân trước khi mua. Không dùng nguồn \u003e25 V hoặc đảo cực.",
+    "pinout": "2 chân xuyên lỗ: +, −; chân − thường có sọc trên vỏ; footprint/khoảng cách chân phụ thuộc đường kính thân.",
+    "applications": "Lọc sau cầu chỉnh lưu; lọc nguồn linear; dự trữ nguồn DC; giảm dao động điện áp tải.",
+    "datasheet": "https://www.nichicon.com/en-us/datasheet/7481/",
+    "datasheetSearch": "Nichicon UPM 470 µF 25V radial aluminum electrolytic datasheet",
+    "example": "Nguồn DC + ──────────┬──────── TẢI\n                       │\n                    + [C1 470 µF/25V]\n                    −  │\nNguồn DC − ──────────┴──────── GND",
+    "exampleExplain": "C1 nạp khi nguồn tăng và phóng vào tải lúc nguồn giảm. Với chỉnh lưu cầu 50 Hz, dòng tải 50 mA, ước lượng gợn ΔV≈I/(100×C)≈1.06 Vpp; công thức chỉ là gần đúng, không bao gồm ESR, diode, dạng tải. Nếu nguồn USB/DC ổn định, tác dụng chủ yếu là chống sụt áp và đáp ứng tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-elec-1000u-25v",
+    "code": "C-EL-1000U-25V",
+    "name": "Tụ hóa 1000 µF / 25 V, chân cắm (mẫu)",
+    "category": "Tụ hóa / Tụ điện phân",
+    "summary": "Tụ hóa nhôm 1000 µF, phần tử tích điện dung lượng lớn để giảm gợn nguồn và dự trữ năng lượng khi tải thay đổi.",
+    "wiring": "Mắc song song +DC–GND; chân (+) vào +DC, chân (−) có sọc đánh dấu ở thân về GND. Không đảo cực. Điện áp làm việc \u003c định mức, kiểm tra ESR, dòng ripple và tuổi thọ.",
+    "limits": "1000 µF / 25 V DC (mẫu), thường dung sai ±20% tùy PN; phải kiểm ESR, dòng gợn định mức, nhiệt độ 105°C (mẫu UPM) và kích thước thân trước khi mua. Không dùng nguồn \u003e25 V hoặc đảo cực.",
+    "pinout": "2 chân xuyên lỗ: +, −; chân − thường có sọc trên vỏ; footprint/khoảng cách chân phụ thuộc đường kính thân.",
+    "applications": "Lọc sau cầu chỉnh lưu; lọc nguồn linear; dự trữ nguồn DC; giảm dao động điện áp tải.",
+    "datasheet": "https://www.nichicon.com/en-us/datasheet/7481/",
+    "datasheetSearch": "Nichicon UPM 1000 µF 25V radial aluminum electrolytic datasheet",
+    "example": "Nguồn DC + ──────────┬──────── TẢI\n                       │\n                    + [C1 1000 µF/25V]\n                    −  │\nNguồn DC − ──────────┴──────── GND",
+    "exampleExplain": "C1 nạp khi nguồn tăng và phóng vào tải lúc nguồn giảm. Với chỉnh lưu cầu 50 Hz, dòng tải 50 mA, ước lượng gợn ΔV≈I/(100×C)≈0.50 Vpp; công thức chỉ là gần đúng, không bao gồm ESR, diode, dạng tải. Nếu nguồn USB/DC ổn định, tác dụng chủ yếu là chống sụt áp và đáp ứng tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-elec-2200u-25v",
+    "code": "C-EL-2200U-25V",
+    "name": "Tụ hóa 2200 µF / 25 V, chân cắm (mẫu)",
+    "category": "Tụ hóa / Tụ điện phân",
+    "summary": "Tụ hóa nhôm 2200 µF, phần tử tích điện dung lượng lớn để giảm gợn nguồn và dự trữ năng lượng khi tải thay đổi.",
+    "wiring": "Mắc song song +DC–GND; chân (+) vào +DC, chân (−) có sọc đánh dấu ở thân về GND. Không đảo cực. Điện áp làm việc \u003c định mức, kiểm tra ESR, dòng ripple và tuổi thọ.",
+    "limits": "2200 µF / 25 V DC (mẫu), thường dung sai ±20% tùy PN; phải kiểm ESR, dòng gợn định mức, nhiệt độ 105°C (mẫu UPM) và kích thước thân trước khi mua. Không dùng nguồn \u003e25 V hoặc đảo cực.",
+    "pinout": "2 chân xuyên lỗ: +, −; chân − thường có sọc trên vỏ; footprint/khoảng cách chân phụ thuộc đường kính thân.",
+    "applications": "Lọc sau cầu chỉnh lưu; lọc nguồn linear; dự trữ nguồn DC; giảm dao động điện áp tải.",
+    "datasheet": "https://www.nichicon.com/en-us/datasheet/7481/",
+    "datasheetSearch": "Nichicon UPM 2200 µF 25V radial aluminum electrolytic datasheet",
+    "example": "Nguồn DC + ──────────┬──────── TẢI\n                       │\n                    + [C1 2200 µF/25V]\n                    −  │\nNguồn DC − ──────────┴──────── GND",
+    "exampleExplain": "C1 nạp khi nguồn tăng và phóng vào tải lúc nguồn giảm. Với chỉnh lưu cầu 50 Hz, dòng tải 50 mA, ước lượng gợn ΔV≈I/(100×C)≈0.23 Vpp; công thức chỉ là gần đúng, không bao gồm ESR, diode, dạng tải. Nếu nguồn USB/DC ổn định, tác dụng chủ yếu là chống sụt áp và đáp ứng tải.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-film-100n-63v",
+    "code": "C-FILM-100N-63V",
+    "name": "Tụ film polyester 100 nF / 63 V (mẫu)",
+    "category": "Tụ film",
+    "summary": "Tụ film polyester 100 nF không phân cực, ổn định hơn tụ hóa trong nhiều mạch AC tín hiệu và RC.",
+    "wiring": "Mắc nối tiếp tín hiệu để ghép AC/chặn DC (nếu phù hợp) hoặc song song tín hiệu/GND làm RC lọc. Đừng nhầm 63 VDC với loại đạt chuẩn chống nhiễu điện lưới X2.",
+    "limits": "100 nF / 63 VDC (series KEMET R82 tham khảo), sai số thường ±5–20% theo PN; nhiệt độ điển hình −55…+105°C, chân xuyên lỗ khoảng cách 5 mm (cần kiểm footprint).",
+    "pinout": "2 chân không phân cực (radial, 5 mm lead spacing trong ví dụ R82).",
+    "applications": "Ghép tín hiệu âm thanh; lọc RC; snubber điện áp thấp nếu đáp ứng xung/ESR phù hợp.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_F3101_R82.pdf",
+    "datasheetSearch": "KEMET R82 film capacitor 100 nF 63V datasheet",
+    "example": "Vin (AC) ───[ C1 = 100 nF film ]──── Vout\n                                   │\n                              [R1 = 10 kΩ]\n                                   │\n                                  GND",
+    "exampleExplain": "C1 và R1 tạo mạch ghép AC / lọc thông cao bậc một, fc≈1/(2π×10 kΩ×0.1 µF)≈159.2 Hz; tín hiệu DC bị chặn khi tụ đã nạp.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-film-470n-63v",
+    "code": "C-FILM-470N-63V",
+    "name": "Tụ film polyester 470 nF / 63 V (mẫu)",
+    "category": "Tụ film",
+    "summary": "Tụ film polyester 470 nF không phân cực, ổn định hơn tụ hóa trong nhiều mạch AC tín hiệu và RC.",
+    "wiring": "Mắc nối tiếp tín hiệu để ghép AC/chặn DC (nếu phù hợp) hoặc song song tín hiệu/GND làm RC lọc. Đừng nhầm 63 VDC với loại đạt chuẩn chống nhiễu điện lưới X2.",
+    "limits": "470 nF / 63 VDC (series KEMET R82 tham khảo), sai số thường ±5–20% theo PN; nhiệt độ điển hình −55…+105°C, chân xuyên lỗ khoảng cách 5 mm (cần kiểm footprint).",
+    "pinout": "2 chân không phân cực (radial, 5 mm lead spacing trong ví dụ R82).",
+    "applications": "Ghép tín hiệu âm thanh; lọc RC; snubber điện áp thấp nếu đáp ứng xung/ESR phù hợp.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_F3101_R82.pdf",
+    "datasheetSearch": "KEMET R82 film capacitor 470 nF 63V datasheet",
+    "example": "Vin (AC) ───[ C1 = 470 nF film ]──── Vout\n                                   │\n                              [R1 = 10 kΩ]\n                                   │\n                                  GND",
+    "exampleExplain": "C1 và R1 tạo mạch ghép AC / lọc thông cao bậc một, fc≈1/(2π×10 kΩ×0.47 µF)≈33.9 Hz; tín hiệu DC bị chặn khi tụ đã nạp.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-film-1u-63v",
+    "code": "C-FILM-1U-63V",
+    "name": "Tụ film polyester 1 µF / 63 V (mẫu)",
+    "category": "Tụ film",
+    "summary": "Tụ film polyester 1 µF không phân cực, ổn định hơn tụ hóa trong nhiều mạch AC tín hiệu và RC.",
+    "wiring": "Mắc nối tiếp tín hiệu để ghép AC/chặn DC (nếu phù hợp) hoặc song song tín hiệu/GND làm RC lọc. Đừng nhầm 63 VDC với loại đạt chuẩn chống nhiễu điện lưới X2.",
+    "limits": "1 µF / 63 VDC (series KEMET R82 tham khảo), sai số thường ±5–20% theo PN; nhiệt độ điển hình −55…+105°C, chân xuyên lỗ khoảng cách 5 mm (cần kiểm footprint).",
+    "pinout": "2 chân không phân cực (radial, 5 mm lead spacing trong ví dụ R82).",
+    "applications": "Ghép tín hiệu âm thanh; lọc RC; snubber điện áp thấp nếu đáp ứng xung/ESR phù hợp.",
+    "datasheet": "https://content.kemet.com/datasheets/KEM_F3101_R82.pdf",
+    "datasheetSearch": "KEMET R82 film capacitor 1 µF 63V datasheet",
+    "example": "Vin (AC) ───[ C1 = 1 µF film ]──── Vout\n                                   │\n                              [R1 = 10 kΩ]\n                                   │\n                                  GND",
+    "exampleExplain": "C1 và R1 tạo mạch ghép AC / lọc thông cao bậc một, fc≈1/(2π×10 kΩ×1 µF)≈15.9 Hz; tín hiệu DC bị chặn khi tụ đã nạp.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-tantalum-10u-16v",
+    "code": "C-TAJ-10U-16V",
+    "name": "Tụ tantalum 10 µF / 16 V (mẫu, KYOCERA AVX TAJ)",
+    "category": "Tụ tantalum",
+    "summary": "Tụ tantalum rắn 10 µF, kích thước gọn, điện dung tương đối lớn, chủ yếu dùng lọc rail DC có phân cực.",
+    "wiring": "Mắc cực (+) về rail dương, cực (−) về GND; lưu ý: trên nhiều tụ tantalum dán TAJ, vạch đánh dấu thường là cực DƯƠNG (+), ngược với sọc cực âm trên tụ hóa nhôm. Cần giới hạn surge/inrush theo datasheet và derating điện áp, không lắp sai cực.",
+    "limits": "10 µF/16 V (ví dụ series TAJ), sai số ±10 hoặc ±20% theo PN, định mức theo 85°C và derating ở nhiệt độ cao; không dùng rail gần bằng định mức; xác nhận case/ESR trước khi làm PCB.",
+    "pinout": "2 đầu SMD có phân cực; với AVX TAJ vạch trên thân = anode (+). Kích thước case thay đổi theo PN.",
+    "applications": "Tụ lọc đầu ra LDO/DC-DC (cần kiểm ổn định theo ESR); lưu trữ điện tích cục bộ trên rail DC.",
+    "datasheet": "https://datasheets.kyocera-avx.com/TAJ.pdf",
+    "datasheetSearch": "KYOCERA AVX TAJ 10 µF 16 V tantalum capacitor datasheet",
+    "example": "+5 V ───────────┬──────── VCC tải\n                  │\n             [+ C1 10 µF ]\n             [−  16 V ]\n                  │\nGND ──────────────┴──────── GND tải",
+    "exampleExplain": "Tụ shunt nhiễu và cung cấp điện tích tức thời. Lựa điện áp rated đủ dư so với rail; tránh dòng xung quá lớn và không đảo cực. Phối hợp với 100 nF MLCC khi cần bypass cao tần.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-tantalum-22u-10v",
+    "code": "C-TAJ-22U-10V",
+    "name": "Tụ tantalum 22 µF / 10 V (mẫu, KYOCERA AVX TAJ)",
+    "category": "Tụ tantalum",
+    "summary": "Tụ tantalum rắn 22 µF, kích thước gọn, điện dung tương đối lớn, chủ yếu dùng lọc rail DC có phân cực.",
+    "wiring": "Mắc cực (+) về rail dương, cực (−) về GND; lưu ý: trên nhiều tụ tantalum dán TAJ, vạch đánh dấu thường là cực DƯƠNG (+), ngược với sọc cực âm trên tụ hóa nhôm. Cần giới hạn surge/inrush theo datasheet và derating điện áp, không lắp sai cực.",
+    "limits": "22 µF/10 V (ví dụ series TAJ), sai số ±10 hoặc ±20% theo PN, định mức theo 85°C và derating ở nhiệt độ cao; không dùng rail gần bằng định mức; xác nhận case/ESR trước khi làm PCB.",
+    "pinout": "2 đầu SMD có phân cực; với AVX TAJ vạch trên thân = anode (+). Kích thước case thay đổi theo PN.",
+    "applications": "Tụ lọc đầu ra LDO/DC-DC (cần kiểm ổn định theo ESR); lưu trữ điện tích cục bộ trên rail DC.",
+    "datasheet": "https://datasheets.kyocera-avx.com/TAJ.pdf",
+    "datasheetSearch": "KYOCERA AVX TAJ 22 µF 10 V tantalum capacitor datasheet",
+    "example": "+3.3 V ───────────┬──────── VCC tải\n                  │\n             [+ C1 22 µF ]\n             [−  10 V ]\n                  │\nGND ──────────────┴──────── GND tải",
+    "exampleExplain": "Tụ shunt nhiễu và cung cấp điện tích tức thời. Lựa điện áp rated đủ dư so với rail; tránh dòng xung quá lớn và không đảo cực. Phối hợp với 100 nF MLCC khi cần bypass cao tần.",
+    "qty": 1,
+    "stockStatus": "reference"
+  },
+  {
+    "id": "c-tantalum-47u-25v",
+    "code": "C-TAJ-47U-25V",
+    "name": "Tụ tantalum 47 µF / 25 V (mẫu, KYOCERA AVX TAJ)",
+    "category": "Tụ tantalum",
+    "summary": "Tụ tantalum rắn 47 µF, kích thước gọn, điện dung tương đối lớn, chủ yếu dùng lọc rail DC có phân cực.",
+    "wiring": "Mắc cực (+) về rail dương, cực (−) về GND; lưu ý: trên nhiều tụ tantalum dán TAJ, vạch đánh dấu thường là cực DƯƠNG (+), ngược với sọc cực âm trên tụ hóa nhôm. Cần giới hạn surge/inrush theo datasheet và derating điện áp, không lắp sai cực.",
+    "limits": "47 µF/25 V (ví dụ series TAJ), sai số ±10 hoặc ±20% theo PN, định mức theo 85°C và derating ở nhiệt độ cao; không dùng rail gần bằng định mức; xác nhận case/ESR trước khi làm PCB.",
+    "pinout": "2 đầu SMD có phân cực; với AVX TAJ vạch trên thân = anode (+). Kích thước case thay đổi theo PN.",
+    "applications": "Tụ lọc đầu ra LDO/DC-DC (cần kiểm ổn định theo ESR); lưu trữ điện tích cục bộ trên rail DC.",
+    "datasheet": "https://datasheets.kyocera-avx.com/TAJ.pdf",
+    "datasheetSearch": "KYOCERA AVX TAJ 47 µF 25 V tantalum capacitor datasheet",
+    "example": "+5 V ───────────┬──────── VCC tải\n                  │\n             [+ C1 47 µF ]\n             [−  25 V ]\n                  │\nGND ──────────────┴──────── GND tải",
+    "exampleExplain": "Tụ shunt nhiễu và cung cấp điện tích tức thời. Lựa điện áp rated đủ dư so với rail; tránh dòng xung quá lớn và không đảo cực. Phối hợp với 100 nF MLCC khi cần bypass cao tần.",
+    "qty": 1,
+    "stockStatus": "reference"
+  }
+]</script>
+  <script>
+  (() => {
+    'use strict';
+    const BASE_CATEGORIES = [
+      'Điện trở', 'Tụ gốm (MLCC)', 'Tụ hóa / Tụ điện phân', 'Diode & Zener',
+      'IC Logic / Buffer / Transceiver', 'Nguồn & DC-DC', 'Cảm biến & Module',
+      'Động cơ & Driver', 'Khác'
+    ];
+    const STORAGE_KEY = 'pcb_component_inventory_v1';
+    const MAX_QTY = 99999999;
+    const $ = id => document.getElementById(id);
+    const findText = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase().trim();
+    const canonical = s => findText(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const safeQty = x => { const n = Number(x); return Number.isSafeInteger(n) && n >= 0 && n <= MAX_QTY ? n : 1; };
+    const allFields = ['id','code','name','category','summary','wiring','limits','pinout','applications','datasheet','datasheetSearch','example','exampleExplain'];
+    function normalizePart(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const part = {};
+      for (const field of allFields) part[field] = typeof raw[field] === 'string' ? raw[field].trim() : '';
+      if (!part.code && !part.name) return null;
+      part.id = canonical(part.id || part.code || part.name);
+      if (!part.id) return null;
+      part.name = part.name || part.code;
+      part.code = part.code || part.name;
+      part.category = part.category || 'Khác';
+      part.qty = safeQty(raw.qty);
+      part.stockStatus = raw.stockStatus === 'reference' ? 'reference' : 'verified';
+      if (!/^https:\/\//i.test(part.datasheet)) part.datasheet = '';
+      return part;
+    }
+    function readJSON(scriptText) {
+      try { const result = JSON.parse(scriptText || '[]'); return Array.isArray(result) ? result : (Array.isArray(result.items) ? result.items : []); }
+      catch { return []; }
+    }
+    let storageAvailable = true;
+    function loadStored() {
+      try { return readJSON(localStorage.getItem(STORAGE_KEY)); }
+      catch { storageAvailable = false; return []; }
+    }
+    function persist() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); storageAvailable = true; }
+      catch { storageAvailable = false; }
+    }
+    const seed = readJSON($('embeddedInventory').textContent).map(normalizePart).filter(Boolean);
+    const stored = loadStored().map(normalizePart).filter(Boolean);
+    // Nội dung chuyên môn của file mới luôn cập nhật từ seed;
+    // số lượng người dùng đã sửa trong trình duyệt được giữ nguyên.
+    const merged = new Map(seed.map(p => [p.id, p]));
+    for (const p of stored) {
+      if (merged.has(p.id)) merged.set(p.id, { ...merged.get(p.id), qty:p.qty, stockStatus:p.stockStatus });
+      else merged.set(p.id, p); // Giữ linh kiện đã tự thêm vào trình duyệt.
+    }
+    let items = [...merged.values()];
+    let currentCategory = '__ALL__';
+    let searchTerm = '';
+    persist();
+
+    function node(tag, className, textContent) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (textContent !== undefined) el.textContent = String(textContent);
+      return el;
+    }
+    function announce(message) {
+      $('notice').textContent = message;
+      $('notice').classList.add('show');
+    }
+    function categories() {
+      return [...BASE_CATEGORIES, ...items.map(p => p.category).filter(c => !BASE_CATEGORIES.includes(c))]
+        .filter((x, i, arr) => arr.indexOf(x) === i);
+    }
+    function tally() {
+      const counts = Object.fromEntries(categories().map(c => [c,0]));
+      for (const p of items) counts[p.category] = (counts[p.category] || 0) + 1;
+      return counts;
+    }
+    function redrawStats(counts) {
+      $('statKinds').textContent = items.length.toLocaleString('vi-VN');
+      $('statQuantity').textContent = items.reduce((a,p) => a + (p.stockStatus === 'verified' ? p.qty : 0),0).toLocaleString('vi-VN');
+      $('statReference').textContent = items.filter(p => p.stockStatus === 'reference').length.toLocaleString('vi-VN');
+      $('statCategories').textContent = Object.values(counts).filter(n => n > 0).length.toLocaleString('vi-VN');
+      $('statCategoriesNote').textContent = `Trong ${categories().length} danh mục khả dụng`;
+    }
+    function redrawCategories(counts) {
+      const filterRoot = $('categoryFilters');filterRoot.replaceChildren();
+      const options = [['__ALL__','Tất cả',items.length], ...categories().map(c => [c,c,counts[c] || 0])];
+      for (const [id,label,count] of options) {
+        const b = node('button','filter');b.type = 'button';b.setAttribute('aria-pressed',String(currentCategory === id));
+        b.append(document.createTextNode(label+' '),node('span','pill-count',count));
+        b.addEventListener('click', () => {currentCategory = id;render();});
+        filterRoot.append(b);
+      }
+      const breakdown = $('breakdown');breakdown.replaceChildren();
+      const highest = Math.max(1,...Object.values(counts));
+      for (const c of categories()) {
+        const entry = node('div','bar-item'); const head = node('div','bar-row');
+        head.append(node('span','',c),node('strong','',counts[c] || 0));
+        const track = node('div','bar-track'); const fill = node('div','bar-fill');
+        fill.style.width = `${((counts[c] || 0) / highest)*100}%`;
+        track.append(fill); entry.append(head,track);breakdown.append(entry);
+      }
+      const list = $('categoryList');list.replaceChildren();
+      for (const c of categories()) { const option = document.createElement('option');option.value = c;list.append(option); }
+    }
+    function line(parent, label, text) {
+      if (!text) return;
+      parent.append(node('div','field-label',label),node('p','field-value',text));
+    }
+    function makeCard(p) {
+      const card = node('article','part-card');
+      const header = node('div','card-top');const titleWrap = node('div');
+      titleWrap.append(node('h3','part-code',p.code));
+      if (p.name !== p.code) titleWrap.append(node('p','part-name',p.name));
+      header.append(titleWrap); card.append(header);
+      card.append(node('span','tag',p.category));
+      if (p.stockStatus === 'reference') card.append(node('span','status-note','Chưa kiểm kê • Số lượng đang tạm tính'));
+      card.append(node('p','desc',p.summary || 'Chưa có mô tả chức năng.'));
+      line(card,'Cách mắc / lưu ý',p.wiring);
+      line(card,'Giới hạn quan trọng',p.limits);
+      line(card,'Pinout / chân kết nối',p.pinout);
+      line(card,'Ứng dụng',p.applications);
+      const footer = node('div','part-footer');
+      if (p.datasheet) {
+        const link = node('a','sheet-link','↗ Mở datasheet');link.href=p.datasheet;link.target='_blank';link.rel='noopener noreferrer';footer.append(link);
+      } else if (p.datasheetSearch) {
+        footer.append(node('span','sheet-missing',`Tra cứu: ${p.datasheetSearch}`));
+      } else footer.append(node('span','sheet-missing','Chưa có link datasheet'));
+      const stock = node('label','stock');stock.append(document.createTextNode(p.stockStatus === 'reference' ? 'SL tạm tính' : 'Tồn kho'));
+      const q = document.createElement('input');q.className='qty-input';q.type='number';q.min='0';q.max=String(MAX_QTY);q.step='1';q.value=String(p.qty);
+      q.setAttribute('aria-label',`Số lượng tồn kho ${p.code}`);
+      q.addEventListener('change', () => {
+        const raw = q.value.trim(); const count = Number(raw);
+        if (raw === '' || !Number.isSafeInteger(count) || count < 0 || count > MAX_QTY) {
+          q.value = String(p.qty);announce('Số lượng cần là số nguyên từ 0 đến '+MAX_QTY.toLocaleString('vi-VN')+'.');return;
+        }
+        p.qty = count;persist();redrawStats(tally());
+        if (!storageAvailable) announce('Trình duyệt không cho lưu localStorage. Hãy nhấn “Xuất HTML mới nhất” để giữ thay đổi.');
+      });
+      stock.append(q);footer.append(stock);card.append(footer);
+      const verify = node('label','stock-verify'+(p.stockStatus === 'verified' ? ' is-verified' : ''));
+      const v = document.createElement('input');v.type='checkbox';v.checked=p.stockStatus === 'verified';
+      v.setAttribute('aria-label',`Xác nhận đã kiểm kê ${p.code}`);
+      verify.append(v,document.createTextNode('Đã kiểm kê, có hàng / xác nhận số lượng'));
+      v.addEventListener('change',() => {
+        p.stockStatus = v.checked ? 'verified' : 'reference'; persist();render();
+        announce(`Đã chuyển “${p.code}” sang trạng thái ${v.checked ? 'đã kiểm kê' : 'chưa kiểm kê'}.`);
+      });
+      card.append(verify);
+      const details = node('details','circuit');details.append(node('summary','','▣ Xem sơ đồ mạch ví dụ'));
+      const body = node('div','circuit-body');
+      if (p.example) body.append(node('pre','',p.example));
+      else body.append(node('p','field-value','Chưa có sơ đồ mạch ví dụ.'));
+      if (p.exampleExplain) body.append(node('p','field-value',p.exampleExplain));
+      details.append(body);card.append(details);
+      return card;
+    }
+    function matches(p) {
+      if (currentCategory !== '__ALL__' && p.category !== currentCategory) return false;
+      if (!searchTerm) return true;
+      return findText([p.code,p.name,p.category,p.summary,p.wiring,p.limits,p.pinout,p.applications,p.datasheetSearch,p.example,p.exampleExplain].join(' ')).includes(searchTerm);
+    }
+    function render() {
+      const counts=tally();redrawStats(counts);redrawCategories(counts);
+      $('resultsHeading').textContent = currentCategory === '__ALL__' ? 'Tất cả linh kiện' : currentCategory;
+      const visible = items.filter(matches).sort((a,b) => a.code.localeCompare(b.code,'vi',{numeric:true}));
+      $('resultsCount').textContent = `${visible.length} / ${items.length} kết quả`;
+      const cardRoot = $('cards');cardRoot.replaceChildren();
+      if (!visible.length) {
+        const empty = node('div','empty');empty.append(node('div','symbol','▧'));
+        empty.append(node('h3','',items.length ? 'Không tìm thấy linh kiện phù hợp' : 'Kho linh kiện chưa có dữ liệu'));
+        empty.append(node('p','',items.length ? 'Thử từ khóa khác hoặc nhấn “Tất cả” để xem đầy đủ.' : 'Gửi mã linh kiện cho ChatGPT để thêm cùng datasheet, cách mắc và sơ đồ ví dụ; hoặc sử dụng form nhập thủ công bên dưới.'));
+        cardRoot.append(empty);
+      } else for (const p of visible) cardRoot.append(makeCard(p));
+    }
+    $('searchInput').addEventListener('input',e => { searchTerm = findText(e.target.value);render(); });
+    $('addForm').addEventListener('submit',e => {
+      e.preventDefault();const values=Object.fromEntries(new FormData(e.currentTarget).entries());
+      const part=normalizePart(values);
+      if (!part) {announce('Vui lòng nhập ít nhất mã hoặc tên linh kiện.');return;}
+      const idx=items.findIndex(p => p.id === part.id);
+      if (idx >= 0) {
+        if (!window.confirm(`Mã “${part.code}” đã có. Bạn muốn cập nhật mục đang có (không tạo mục mới)?`)) return;
+        items[idx]=part;announce(`Đã cập nhật “${part.code}” mà không tạo bản ghi trùng.`);
+      } else {items.push(part);announce(`Đã thêm “${part.code}” vào danh mục “${part.category}”.`);}
+      persist();currentCategory='__ALL__';searchTerm='';$('searchInput').value='';render();e.currentTarget.reset();$('manualPanel').open=false;
+      if (!storageAvailable) announce('Không thể lưu trong trình duyệt; hãy xuất HTML ngay để giữ dữ liệu mới.');
+    });
+    $('exportBtn').addEventListener('click',() => {
+      const clone=document.documentElement.cloneNode(true);
+      const embedded=clone.querySelector('#embeddedInventory');
+      // Escape các ký tự có thể phá vỡ nội dung <script> JSON trong HTML.
+      embedded.textContent=JSON.stringify(items,null,2).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+      // Bỏ nội dung render động; JS khôi phục toàn bộ khi file được mở lại.
+      for (const id of ['categoryFilters','breakdown','cards']) clone.querySelector('#'+id).replaceChildren();
+      const msg=clone.querySelector('#notice');msg.textContent='';msg.className='notice';
+      clone.querySelector('#manualPanel').removeAttribute('open');
+      clone.querySelector('#searchInput').value='';
+      const contents='<!DOCTYPE html>\n'+clone.outerHTML;
+      const blob=new Blob([contents],{type:'text/html;charset=utf-8'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='component_inventory.html';
+      document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      announce(`Đã đóng gói ${items.length} mục linh kiện vào tệp HTML. Hãy lưu file vừa tải xuống làm bản mới nhất.`);
+    });
+    $('importBtn').addEventListener('click',() => $('importFile').click());
+    $('importFile').addEventListener('change',async e => {
+      const file=e.target.files && e.target.files[0];if(!file)return;
+      try {
+        const content=await file.text();let imported=[];
+        if (/\.json$/i.test(file.name)) imported=readJSON(content);
+        else {
+          const parsed=new DOMParser().parseFromString(content,'text/html');
+          const embedded=parsed.getElementById('embeddedInventory');
+          if (!embedded) throw new Error('Không tìm thấy dữ liệu kho được nhúng trong file HTML.');
+          imported=readJSON(embedded.textContent);
+        }
+        if (!imported.length) {announce('Tệp không có bản ghi hợp lệ để nhập.');return;}
+        const map=new Map(items.map(p=>[p.id,p]));let added=0,updated=0;
+        for (const raw of imported) {
+          const part=normalizePart(raw);if (!part) continue;
+          if (map.has(part.id)) updated++;else added++;
+          map.set(part.id,part);
+        }
+        if (updated && !window.confirm(`Sẽ thêm ${added} mục và cập nhật ${updated} mục trùng mã bằng dữ liệu từ tệp đã nhập. Tiếp tục?`)) return;
+        items=[...map.values()];persist();currentCategory='__ALL__';searchTerm='';$('searchInput').value='';render();
+        announce(`Nhập thành công: ${added} mục mới, ${updated} mục cập nhật. Tổng ${items.length} mục.`);
+        if (!storageAvailable) announce('Dữ liệu đã nhập nhưng localStorage không khả dụng; hãy xuất HTML để giữ thay đổi.');
+      } catch(err) {announce('Không thể nhập tệp: '+err.message);}finally {e.target.value='';}
+    });
+    render();
+    if (!storageAvailable) announce('localStorage bị chặn ở trình duyệt này. Vẫn có thể chỉnh sửa, nhưng cần “Xuất HTML mới nhất” để lưu dữ liệu.');
+  })();
+  </script>
+</body>
+</html>
