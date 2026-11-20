@@ -937,6 +937,23 @@
     "exampleExplain": "Nguồn IC 3,3V cho phép chân A nhận tín hiệu logic 5V nhưng ngõ Y xuất ra tối đa xấp xỉ 3,3V phù hợp GPIO ESP32. /OE=LOW kích hoạt truyền A→Y, /OE=HIGH ngắt đầu ra (Hi-Z). R1=10kΩ kéo /OE lên 3,3V giữ an toàn lúc MCU reset, trái với 74LVC1G126 cần kéo OE xuống. C1=100nF giảm nhiễu nguồn cục bộ. Khi Y Hi-Z, GPIO có thể trôi nếu không có pull-up/pull-down; thêm R2=10kΩ khi cần. Đây là buffer mức logic, không phải bộ cách ly galvanic.",
     "qty": 1,
     "stockStatus": "verified"
+  },
+  {
+    "id": "bat54s-kl4",
+    "code": "BAT54S KL4",
+    "name": "BAT54S – cặp diode Schottky mắc nối tiếp, SOT-23 (marking KL4)",
+    "category": "Diode & Zener",
+    "summary": "Hai diode Schottky tích hợp trong SOT-23, mắc nối tiếp cùng chiều, chân 3 là nút giữa hai diode. KL4 là marking tương ứng BAT54S theo datasheet Diodes Incorporated; cần đối chiếu vỏ và hãng vì mã marking SMD có thể trùng. Không phải BAT54A (common anode) hay BAT54C (common cathode).",
+    "wiring": "Sơ đồ diode: chân 1 (anode D1) → D1 → chân 3 (cathode D1 / anode D2) → D2 → chân 2 (cathode D2). Dùng từng diode: D1 từ 1 sang 3; D2 từ 3 sang 2. Nếu mắc nối tiếp hai diode, cho dòng từ 1 tới 2 và bỏ trống chân 3 khi không cần nút giữa. Dùng kẹp tín hiệu mức 3,3V: chân 1 nối GND, chân 3 nối SIGNAL, chân 2 nối +3,3V, tín hiệu phải có điện trở hạn dòng; các diode dẫn khi tín hiệu thấp hơn GND một VF hoặc cao hơn 3,3V một VF. Không coi đây là giải pháp bảo vệ ESD chuyên dụng và không cho tín hiệu đi vào rail 3,3V khi rail không thể hấp thụ dòng.",
+    "limits": "Diodes Incorporated BAT54S (DS11005 Rev.34-2, 11/2023): VRRM=30V; dòng chỉnh lưu trung bình IO=200mA (theo điều kiện bố trí PCB); dòng thuận đỉnh lặp IFRM=300mA; xung không lặp IFSM=600mA (\u003c1s); PD=200mW; VF tối đa 0,24V@0,1mA, 0,32V@1mA, 0,40V@10mA, 0,50V@30mA, 0,80V@100mA; IR tối đa 2µA@VR=25V; CT tối đa 10pF@VR=1V,1MHz; trr tối đa 5ns theo điều kiện đo; Tj=-65…+150°C. Hai diode trong cùng vỏ nên cần giới hạn công suất tổng, không mặc định mỗi diode có thể chạy 200mA liên tục cùng lúc.",
+    "pinout": "SOT-23 3 chân, nhìn từ mặt trên: chân 3 ở phía một chân đơn, chân 1 và 2 ở phía hai chân. Chân 1=anode diode D1; chân 3=cathode D1/anode D2 (nút giữa); chân 2=cathode D2. Sơ đồ: (1) A ─|>|─ (3) ─|>|─ (2) K. Mã in KL4 tương ứng BAT54S theo Diodes Incorporated; cần đối chiếu bản vẽ pinout hãng khi đặt footprint.",
+    "applications": "Kẹp điện áp tín hiệu số/tương tự dòng nhỏ, hạn chế quá áp/âm áp với điện trở nối tiếp, định hướng dòng tín hiệu, diode steering, phát hiện mức, chỉnh lưu tín hiệu biên độ nhỏ. Không dùng thay cầu chỉnh lưu công suất hoặc diode flyback động cơ lớn.",
+    "datasheet": "https://www.diodes.com/datasheet/download/BAT54S.pdf",
+    "datasheetSearch": "Diodes Incorporated BAT54S marking KL4 DS11005 datasheet 30V 200mA SOT23",
+    "example": "VÍ DỤ: KẸP TÍN HIỆU VÀO ADC 3,3V (không phải ESD TVS)\n\n                 +3,3V\n                   │\n                   │ chân 2 (K D2)\n                  ┌┴┐\n                  │>| D2: chân 3 → chân 2\n                  └┬┘\n                   │\nTín hiệu ─[R1]─────●───── GPIO/ADC (input)\n          10kΩ     │ chân 3 (nút giữa)\n                  ┌┴┐\n                  │>| D1: chân 1 → chân 3\n                  └┬┘\n                   │\n                   │ chân 1 (A D1)\n                  GND\n\nR1 = 10 kΩ để hạn dòng kẹp (chọn theo biên độ xung\nvà dòng tối đa mà rail nguồn có thể nhận).\nD1 kẹp khi SIGNAL \u003c -VF; D2 kẹp khi SIGNAL > VCC+VF.\nNguồn 3,3V phải có khả năng hấp thụ dòng bơm vào rail.\nKhông bảo đảm GPIO chịu được quá áp: cần kiểm tra\nabsolute maximum và dòng injection theo datasheet MCU.",
+    "exampleExplain": "Khi tín hiệu ở 0–3,3V, cả hai diode đều phân cực ngược hoặc chưa đủ phân cực thuận nên hầu như không dẫn. Khi SIGNAL > 3,3V+VF, D2 dẫn từ chân 3 sang chân 2, chuyển dòng qua R1 về rail 3,3V. Khi SIGNAL \u003c -VF, D1 dẫn từ GND chân 1 sang SIGNAL chân 3, hạn chế điện áp âm. R1 giới hạn dòng, ví dụ tín hiệu 5V với VCC=3,3V và VF≈0,3V: dòng kẹp xấp xỉ (5−3,3−0,3)/10kΩ≈0,14mA. Tuy nhiên mức kẹp 3,3V+VF có thể vẫn vượt absolute maximum của GPIO; rail 3,3V cũng có thể tăng nếu không tiêu thụ/hấp thụ dòng. Không coi mạch ví dụ là bảo vệ hoàn chỉnh, nên dùng bộ chuyển mức hoặc IC bảo vệ phù hợp khi nối 5V với ESP32.",
+    "qty": 1,
+    "stockStatus": "verified"
   }
 ]</script>
   <script>
