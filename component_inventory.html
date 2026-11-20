@@ -920,6 +920,23 @@
     "exampleExplain": "Khi cấp VCC=3,3V, đầu vào A chịu được mức 5V và đầu ra Y chỉ dao động trong miền 0–3,3V, nên có thể đưa vào GPIO ESP32. OE active-HIGH cho phép truyền, OE LOW làm Y trở kháng cao (không có nghĩa Y=0). R1 10kΩ giữ OE thấp khi ESP32 khởi động; tụ 100nF giảm nhiễu nguồn khi buffer chuyển trạng thái. Không dùng 74LVC1G126 VCC=5V để nâng 3,3→5V vì VIH tối thiểu 3,5V tại VCC=5V; dùng 74AHCT1G126/74AHCT125 hoặc bộ chuyển mức phù hợp nếu cần nâng mức.",
     "qty": 1,
     "stockStatus": "verified"
+  },
+  {
+    "id": "74lvc1g125",
+    "code": "74LVC1G125",
+    "name": "SN74LVC1G125 – buffer không đảo 1 bit, ngõ ra 3 trạng thái, /OE tác động mức thấp",
+    "category": "IC Logic / Buffer / Transceiver",
+    "summary": "Buffer logic không đảo 1 bit, đầu ra 3 trạng thái. /OE=LOW: Y=A; /OE=HIGH: Y=Hi-Z (ngõ ra trở kháng cao, không phải mức 0). Khác 74LVC1G126 ở cực tính chân enable: 125 active-LOW, 126 active-HIGH.",
+    "wiring": "VCC chân 5 cấp 1,65–5,5 V; GND chân 3. C1=100 nF MLCC X7R nối VCC-GND sát IC. Chân 2=A dữ liệu, chân 1=/OE enable tác động mức THẤP, chân 4=Y ra tải logic. Để Y mặc định Hi-Z lúc MCU khởi động, thêm R1=10 kΩ kéo /OE lên VCC, GPIO kéo /OE xuống 0V để cho phép truyền; nếu muốn luôn bật, nối /OE xuống GND. Tránh để A hoặc /OE trôi. Khi cấp VCC=3,3 V, A có thể nhận 5V logic (theo giới hạn đầu vào) và Y chỉ ra mức 3,3V; đảm bảo GND chung. Nếu Y=Hi-Z và tải cần trạng thái xác định, thêm điện trở kéo 10 kΩ ở phía tải. Không dùng VCC=5 V để chuyển 3,3V lên 5V nếu không bảo đảm VIH (tại VCC=5V, VIH≥3,5V theo TI). Không dùng để cấp trực tiếp động cơ/servo.",
+    "limits": "Texas Instruments SN74LVC1G125: VCC khuyến nghị 1,65–5,5 V; điện áp đầu vào A và /OE 0–5,5 V (chịu đầu vào 5V khi VCC thấp hoặc mất nguồn theo tính năng Ioff); nhiệt độ vận hành −40…+125°C; ngõ ra có khả năng lái tải ±24mA ở VCC=3,3V, ±32mA ở VCC=5V theo điều kiện VOH/VOL datasheet, không phải dòng tuyệt đối dùng vô hạn; kiểm tra riêng IOH/IOL ở điện áp nguồn thấp. VIH≥2V ở VCC=3–3,6V, VIH≥0,7×VCC ở 4,5–5,5V. Đầu ra Y không được đưa điện áp vượt VCC khi đang bật.",
+    "pinout": "Loại 5 chân (TI DBV SOT-23-5, DCK SC70-5, DRL SOT-5X3-5), nhìn từ trên: 1=/OE, 2=A, 3=GND, 4=Y, 5=VCC. Loại 6 chân (DRY/DSF): 1=/OE, 2=A, 3=GND, 4=Y, 5=NC, 6=VCC. Cần chọn footprint đúng hậu tố mã hàng, không hoán đổi chân 5/6.",
+    "applications": "Bật/tắt truyền tín hiệu GPIO bằng Hi-Z; buffer đường logic, chia sẻ bus (tránh hai đầu ra cùng lái); hạ mức tín hiệu 5V về 3,3V để đưa vào ESP32; cách ly trạng thái logic nhưng KHÔNG cách ly điện galvanic; dùng chân /OE active-LOW để vô hiệu hóa đường tín hiệu khi khởi động.",
+    "datasheet": "https://www.ti.com/lit/ds/symlink/sn74lvc1g125.pdf",
+    "datasheetSearch": "Texas Instruments SN74LVC1G125 datasheet SCES223 active low OE SOT-23-5 pinout",
+    "example": "VÍ DỤ: Cho phép/ngắt tín hiệu 5V đến GPIO ESP32 (3,3V)\n\n           +3,3V ─────────── VCC (5)\n              │                 │\n             [R1] 10kΩ         [C1] 100nF\n              │                 │\nGPIO ENABLE ──┴──── /OE (1)    GND (3) ── GND chung\n                           ┌─────────────────┐\n5V DATA ───────────────────┤ A (2)           │\n                           │  74LVC1G125     │\nGPIO ESP32 (input) ◄───────┤ Y (4)           │\n                           └─────────────────┘\n\nR1 = 10 kΩ kéo /OE lên +3,3V để mặc định tắt.\nC1 = 100 nF X7R, sát VCC-GND của IC.\nTùy yêu cầu, thêm R2=10 kΩ kéo GPIO input về GND\nđể định mức LOW khi Y đang Hi-Z.\n\nGPIO ENABLE = LOW  → Y theo A (0/3,3V).\nGPIO ENABLE = HIGH → Y = Hi-Z (không tự thành 0).",
+    "exampleExplain": "Nguồn IC 3,3V cho phép chân A nhận tín hiệu logic 5V nhưng ngõ Y xuất ra tối đa xấp xỉ 3,3V phù hợp GPIO ESP32. /OE=LOW kích hoạt truyền A→Y, /OE=HIGH ngắt đầu ra (Hi-Z). R1=10kΩ kéo /OE lên 3,3V giữ an toàn lúc MCU reset, trái với 74LVC1G126 cần kéo OE xuống. C1=100nF giảm nhiễu nguồn cục bộ. Khi Y Hi-Z, GPIO có thể trôi nếu không có pull-up/pull-down; thêm R2=10kΩ khi cần. Đây là buffer mức logic, không phải bộ cách ly galvanic.",
+    "qty": 1,
+    "stockStatus": "verified"
   }
 ]</script>
   <script>
