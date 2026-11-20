@@ -903,6 +903,23 @@
     "exampleExplain": "Mạch cấp 12 V độc lập cho motor qua B+/B−, Arduino chỉ cấp logic 5 V và tạo PWM. Khi D7/D8 cho phép, một nhánh cầu H đóng ngắt theo PWM và nhánh kia ở mức LOW, đặt điện áp trung bình có dấu xác định lên hai đầu động cơ. Đổi chân PWM đang hoạt động thì đổi cực tính điện áp trung bình nên motor đổi chiều. Duty cycle 50% tạo xấp xỉ nửa điện áp trung bình (bỏ qua tổn hao, đặc tính dòng cảm và trạng thái freewheeling). Dùng PWM 5 kHz để khởi đầu thử nghiệm, không vượt mức 25 kHz của IC. R_EN/L_EN kéo xuống tránh chạy lúc khởi động; tụ C1/C2 giảm sụt áp và nhiễu tại đầu cấp; cầu chì bảo vệ dây và nguồn. Đối với ESP32 3,3 V, cần kiểm tra ngưỡng HIGH của mạch đệm trên module, có thể dùng 74AHCT125 chuyển mức 3,3→5 V.",
     "qty": 1,
     "stockStatus": "verified"
+  },
+  {
+    "id": "74lvc1g126",
+    "code": "74LVC1G126",
+    "name": "SN74LVC1G126 – buffer 1 kênh, ngõ ra 3 trạng thái, OE tác động mức cao",
+    "category": "IC Logic / Buffer / Transceiver",
+    "summary": "Buffer không đảo 1 bit với ngõ ra 3 trạng thái: OE=HIGH thì Y=A; OE=LOW thì Y=Hi-Z (không chủ động kéo lên/xuống). Hỗ trợ hạ mức tín hiệu 5V xuống 3,3V khi VCC=3,3V; KHÔNG dùng trực tiếp để nâng 3,3V thành 5V khi cấp VCC=5V vì VIH yêu cầu ≥3,5V.",
+    "wiring": "VCC chân 5 cấp 1,65–5,5V; GND chân 3; tụ gốm 100nF X7R nối VCC-GND sát IC. A chân 2 nhận dữ liệu, OE chân 1 là cho phép active-HIGH; Y chân 4 ra tải logic. Thêm R 10kΩ kéo OE xuống GND để Y mặc định Hi-Z lúc khởi động; MCU kéo OE lên VCC để kích hoạt. Nếu cần bật liên tục, nối OE trực tiếp VCC. Không để A/OE trôi; không nối Y trực tiếp nguồn 5V khi IC đang lái ở VCC 3,3V. Tín hiệu vào A/OE được phép đến 5,5V kể cả VCC thấp hoặc mất nguồn theo điều kiện datasheet; mức ra HIGH gần VCC, không tự tạo 5V từ tín hiệu 3,3V.",
+    "limits": "TI SN74LVC1G126: VCC vận hành 1,65–5,5V; điện áp vào A/OE 0–5,5V; nhiệt độ -40…+125°C; ICC tối đa 10µA (đầu vào ở rail, không tải); tpd tối đa 3,7ns tại VCC 3,3V và CL 15pF; dòng tải khuyến nghị tới ±24mA ở VCC≈3,3V và ±32mA ở VCC≈5V (tùy VOH/VOL); ±50mA là absolute maximum, không phải dòng thiết kế liên tục. VIH min 2V tại VCC 3–3,6V, min 0,7×VCC tại 4,5–5,5V (tức 3,5V khi VCC=5V).",
+    "pinout": "SOT-23-5 (DBV), SC70-5 (DCK), SOT-5X3-5 (DRL), nhìn từ TRÊN: chân 1=OE, 2=A, 3=GND, 4=Y, 5=VCC. Phiên bản 6 chân DRY/DSF: 1=OE, 2=A, 3=GND, 4=Y, 5=NC, 6=VCC. Xác định đúng hậu tố package và dấu chân 1 khi vẽ footprint PCB.",
+    "applications": "Buffer tín hiệu GPIO; cách ly logic bằng trạng thái Hi-Z (không cách ly điện/galvanic); cho phép/ngắt đường tín hiệu theo điều khiển MCU; hạ mức tín hiệu logic 5V về 3,3V; điều khiển bus chia sẻ khi không được phép có hai nguồn cùng lái.",
+    "datasheet": "https://www.ti.com/lit/ds/symlink/sn74lvc1g126.pdf",
+    "datasheetSearch": "Texas Instruments SN74LVC1G126 datasheet SCES224S pinout DBV DCK active high OE",
+    "example": "VÍ DỤ: 5V logic → 3,3V GPIO ESP32 (buffer 3 trạng thái)\n\n       +3,3V ────────────────┐\n                             │\n                       VCC (5)\n                           ┌───────────────┐\n5V DATA ──────────────────┤ A (2)    Y (4)├─── GPIO ESP32 (input)\n                           │ SN74LVC1G126 │\nESP32 ENABLE (3,3V) ───────┤ OE (1)        │\n                           │        GND(3)├──── GND chung\n                           └───────────────┘\n                             │\n               R1 10kΩ: OE ──┴── GND (kéo xuống)\nC1 100nF/10V X7R: nối VCC (5) ── GND (3), sát IC.\n\nOE=HIGH (3,3V): Y theo A, nhưng HIGH ≈3,3V.\nOE=LOW: Y=Hi-Z (GPIO ESP32 có thể cần điện trở kéo\nlên/kéo xuống 10kΩ để tránh trôi khi OE=LOW).\nChú ý: GPIO ESP32 không chịu 5V; phải cấp IC VCC=3,3V.",
+    "exampleExplain": "Khi cấp VCC=3,3V, đầu vào A chịu được mức 5V và đầu ra Y chỉ dao động trong miền 0–3,3V, nên có thể đưa vào GPIO ESP32. OE active-HIGH cho phép truyền, OE LOW làm Y trở kháng cao (không có nghĩa Y=0). R1 10kΩ giữ OE thấp khi ESP32 khởi động; tụ 100nF giảm nhiễu nguồn khi buffer chuyển trạng thái. Không dùng 74LVC1G126 VCC=5V để nâng 3,3→5V vì VIH tối thiểu 3,5V tại VCC=5V; dùng 74AHCT1G126/74AHCT125 hoặc bộ chuyển mức phù hợp nếu cần nâng mức.",
+    "qty": 1,
+    "stockStatus": "verified"
   }
 ]</script>
   <script>
